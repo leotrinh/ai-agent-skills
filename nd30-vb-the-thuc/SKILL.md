@@ -1,5 +1,5 @@
 ---
-name: Skill_The_Thuc_VB_ND30
+name: nd30-vb-the-thuc
 description: Skill tạo văn bản hành chính đúng thể thức Nghị định 30/2020/NĐ-CP. Sinh file .docx pixel-perfect cho công văn và quyết định, với ma trận phân quyền ký TM/KT/TL tự động.
 version: 1.0.0
 author: Leo
@@ -22,7 +22,7 @@ Skill này dạy AI Agent cách sinh file `.docx` văn bản hành chính đúng
 
 ## Cấu trúc thư mục
 ```
-Skill_The_Thuc_VB_ND30/
+nd30-vb-the-thuc/
 ├── SKILL.md                     ← File này (hướng dẫn cho AI Agent)
 ├── package.json                 ← Khai báo thư viện docx
 ├── scripts/
@@ -36,7 +36,7 @@ Skill_The_Thuc_VB_ND30/
 ## Cài đặt
 ```bash
 # Vào thư mục skill
-cd Skill_The_Thuc_VB_ND30
+cd nd30-vb-the-thuc
 
 # Cài thư viện
 npm install
