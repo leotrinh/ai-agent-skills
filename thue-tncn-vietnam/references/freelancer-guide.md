@@ -11,8 +11,11 @@
 | Doanh thu/năm | TNCN | GTGT | Kê khai | Bạn cần làm |
 |---------------|------|------|---------|-------------|
 | **≤ 500 triệu** | Miễn | Miễn | 1 lần/năm | Đăng ký MST, kê khai DT |
-| **500 tr – 3 tỷ** | Nộp | Nộp | Theo quý | Nộp % DT, kê khai quý |
-| **> 3 tỷ** | Nộp | Nộp | Quý + QT | Cần sổ sách kế toán |
+| **500 tr – 3 tỷ** | **PP1:** % DT **hoặc PP2:** theo lợi nhuận | % DT | Theo quý | Chọn PP phù hợp, kê khai quý |
+| **> 3 tỷ** | Theo lợi nhuận (bắt buộc) | **% DT** (không phải lợi nhuận) | Quý + QT | Bắt buộc sổ sách kế toán |
+
+> **Lưu ý mục 500 tr – 3 tỷ:** Được lựa chọn 1 trong 2 phương pháp — PP1 (% DT) đơn giản, không cần sổ sách; PP2 (lợi nhuận) cần sổ sách nhưng có lợi hơn nếu chi phí kinh doanh cao.
+> **Lưu ý mục > 3 tỷ:** TNCN tính theo lợi nhuận, nhưng **GTGT vẫn tính theo % doanh thu**.
 
 ---
 

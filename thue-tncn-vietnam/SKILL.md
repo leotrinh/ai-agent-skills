@@ -102,8 +102,8 @@ thue-tncn-vietnam/
 | Doanh thu/năm | TNCN | GTGT |
 |---------------|------|------|
 | ≤ 500 triệu   | Miễn | Miễn |
-| 500 tr – 3 tỷ | Nộp % DT | Nộp % DT |
-| > 3 tỷ        | Theo lợi nhuận | Theo lợi nhuận |
+| 500 tr – 3 tỷ | PP1: % DT **hoặc** PP2: theo lợi nhuận | % DT |
+| > 3 tỷ        | Theo lợi nhuận (bắt buộc) | % DT (không phải lợi nhuận) |
 
 ---
 

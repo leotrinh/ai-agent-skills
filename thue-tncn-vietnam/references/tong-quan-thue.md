@@ -67,11 +67,14 @@ Người lao động đóng: 10,5% lương (BHXH 8% + BHYT 1,5% + BHTN 1%)
 
 | Doanh thu/năm | Thuế TNCN | Thuế GTGT | Kê khai |
 |---------------|-----------|-----------|---------|
-| ≤ 500 triệu   | Miễn      | Miễn      | Kê khai 1 lần/năm |
-| 500 tr – 3 tỷ | Nộp % DT  | Nộp % DT  | Kê khai theo quý |
-| > 3 tỷ        | Theo lợi nhuận | Theo lợi nhuận | Cần sổ sách kế toán |
+| ≤ 500 triệu   | Miễn | Miễn | 1 lần/năm |
+| 500 tr – 3 tỷ | **PP1:** % DT — hoặc **PP2:** theo lợi nhuận (nếu có sổ sách) | % DT | Theo quý |
+| > 3 tỷ        | Theo lợi nhuận (bắt buộc sổ sách) | **% DT** (không theo lợi nhuận) | Quý + quyết toán |
 
-**Lưu ý:** Thuế khoán (CQT ấn định mức thuế) không còn tồn tại từ 01/01/2026. Mọi hộ kinh doanh (HKD) và cá nhân kinh doanh (CNKD) tự kê khai.
+**Lưu ý quan trọng:**
+- **500 tr – 3 tỷ:** Được **lựa chọn 1 trong 2 phương pháp**: (PP1) nộp % doanh thu — đơn giản, không cần sổ sách; hoặc (PP2) nộp theo lợi nhuận thực tế — cần sổ sách kế toán, có lợi hơn nếu chi phí cao.
+- **Trên 3 tỷ:** TNCN bắt buộc tính theo lợi nhuận, nhưng **GTGT vẫn tính theo % doanh thu** (không phải lợi nhuận).
+- Thuế khoán (CQT ấn định) không còn từ 01/01/2026. Mọi HKD/CNKD tự kê khai.
 
 ---
 
