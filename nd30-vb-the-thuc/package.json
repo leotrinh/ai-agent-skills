@@ -1,0 +1,17 @@
+{
+  "name": "skill-the-thuc-vb-nd30",
+  "version": "1.0.0",
+  "description": "Sinh file .docx văn bản hành chính đúng thể thức Nghị định 30/2020/NĐ-CP",
+  "author": "Leo",
+  "license": "MIT",
+  "scripts": {
+    "cong-van": "node scripts/generate_cong_van.js --input data.json --output cong_van.docx",
+    "quyet-dinh": "node scripts/generate_quyet_dinh.js --input data.json --output quyet_dinh.docx"
+  },
+  "dependencies": {
+    "docx": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
