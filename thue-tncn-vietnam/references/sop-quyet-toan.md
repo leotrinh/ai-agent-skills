@@ -1,113 +1,96 @@
-# SOP Quyết Toán Thuế TNCN 2026
-**Standard Operating Procedure — eTax Mobile**
-**Căn cứ:** Luật 109/2025/QH15 | TT 80/2021/TT-BTC
-**Cập nhật:** 25/03/2026
+# SOP Quyết Toán Thuế TNCN - Cá Nhân Tự Kê Khai
 
----
+> **Áp dụng:** Quyết toán thuế TNCN năm 2025 (nộp trong năm 2026)
+> **Hạn chót:** 30/04/2026 (hoặc ngày làm việc tiếp theo nếu trùng lễ -> 04/05/2026)
 
-## 1. Ai CẦN quyết toán thuế?
+## Ai Cần Tự Quyết Toán?
 
-| Trường hợp | Cần QT? |
-|-----------|---------|
-| Lương 1 nơi, DN đã quyết toán thay | KHÔNG |
-| Lương 2 nơi trở lên | **CÓ** |
-| Lương 1 nơi + thu nhập phụ > 10 tr/năm | **CÓ** |
-| Freelancer, KOL, người bán hàng online | **CÓ** |
-| Thu nhập < mức giảm trừ (nên QT để hoàn thuế) | Nên làm |
+- [ ] Thu nhập từ tiền lương/tiền công từ 2 nơi trở lên (không đủ ĐK ủy quyền)
+- [ ] Số thuế phải nộp thêm > 50.000 VNĐ so với số đã tạm nộp/khấu trừ
+- [ ] Muốn hoàn thuế hoặc bù trừ vào kỳ tính thuế tiếp theo
 
----
+## Hồ Sơ Cần Chuẩn Bị
 
-## 2. SOP 9 Bước Quyết Toán — eTax Mobile
+- [ ] CCCD/CMND (bản sao)
+- [ ] Mã số thuế cá nhân (MST)
+- [ ] Tờ khai quyết toán mẫu **02/QTT-TNCN** (Thông tư 80/2021/TT-BTC)
+- [ ] Phụ lục **02-1/BK-QTT-TNCN** (bảng kê giảm trừ gia cảnh cho NPT - nếu có)
+- [ ] Chứng từ khấu trừ thuế (bản sao)
+- [ ] Hóa đơn đóng góp từ thiện/nhân đạo/khuyến học (nếu có)
+- [ ] Số tài khoản ngân hàng (nếu hoàn thuế)
 
-**Thời gian thực hiện:** ~15 phút
-**Deadline quyết toán thuế 2025:** 04/05/2026 (dời từ 30/04 do nghỉ lễ)
+## SOP: Quyết Toán Qua eTax Mobile (Khuyến nghị)
 
----
+### Bước 1: Cài đặt & Đăng nhập
+- [ ] Tải app **eTax Mobile** từ App Store / Google Play
+- [ ] Đăng nhập bằng MST + mật khẩu HOẶC VNeID (mức độ 2)
+- [ ] Kiểm tra thông tin cá nhân đã chính xác
 
-### Bước 1: Tải app eTax Mobile
-- **iOS:** App Store — tìm "eTax Mobile"
-- **Android:** Google Play — tìm "eTax Mobile"
-- Ứng dụng chính thức của Tổng cục Thuế Việt Nam
+### Bước 2: Truy cập chức năng quyết toán
+- [ ] Chọn **"Hỗ trợ quyết toán thuế TNCN"** tại màn hình chính
+- [ ] Chọn **"Hỗ trợ lập tờ khai quyết toán"**
+- [ ] Chọn năm quyết toán: **2025**
 
-### Bước 2: Đăng ký / Đăng nhập
-- Dùng **MST cá nhân** (mã số thuế 10 số)
-- Xác thực qua **OTP qua số điện thoại** đã đăng ký
-- Nếu chưa có MST: đăng ký tại cơ quan thuế hoặc qua Cổng DVC Quốc gia
+### Bước 3: Tra cứu dữ liệu
+- [ ] Nhấn **"Tra cứu"** - hệ thống tự tổng hợp dữ liệu thu nhập + thuế đã khấu trừ
+- [ ] Kiểm tra, rà soát dữ liệu (nếu sai, liên hệ đơn vị chi trả để điều chỉnh)
 
-### Bước 3: Chọn "Quyết toán thuế"
-- Vào menu chính → chọn **"Quyết toán TNCN"**
-- Chọn năm quyết toán (năm 2025 cho kỳ này)
+### Bước 4: Tạo tờ khai
+- [ ] Nhấn **"Tạo tờ khai 02/QTT-TNCN gợi ý"**
+- [ ] Trả lời các câu hỏi hệ thống đưa ra
+- [ ] Điền thông tin vào tờ khai + phụ lục
 
-### Bước 4: Kiểm tra thông tin tự động
-- App tự điền thu nhập từ DN/tổ chức đã khấu trừ
-- Kiểm tra kỹ số liệu so với **phiếu lương / chứng từ khấu trừ thuế**
+### Bước 5: Kiểm tra người phụ thuộc
+- [ ] Vào **"Bảng kê 02-1/BK-QTT-TNCN"** kiểm tra thông tin NPT
+- [ ] Bổ sung NPT nếu bị sót
 
-### Bước 5: Bổ sung thu nhập khác
-- Thêm các khoản thu nhập ngoài lương (nếu có)
-- Thu nhập vãng lai, freelance, bán hàng, cho thuê...
+### Bước 6: Cam kết & Nộp
+- [ ] Kiểm tra lại toàn bộ thông tin tờ khai
+- [ ] Tích ô **cam kết** với số liệu đã khai
+- [ ] Nếu được hoàn thuế: điền thông tin tài khoản ngân hàng
+- [ ] Nhấn **"Nộp tờ khai"**
 
-### Bước 6: Khai người phụ thuộc (NPT)
-- Thêm NPT nếu chưa đăng ký hoặc có thay đổi
-- Cần: Giấy khai sinh, CMT/CCCD của NPT
-- Xác nhận số NPT để tính giảm trừ đúng
+### Bước 7: Đính kèm hồ sơ
+- [ ] Upload chứng từ khấu trừ thuế
+- [ ] Upload hợp đồng lao động (nếu cần)
+- [ ] Upload CCCD
 
-### Bước 7: Kiểm tra số liệu cuối
-- So sánh tổng thu nhập với phiếu lương/bảng thuế DN
-- Kiểm tra giảm trừ gia cảnh đã đúng chưa
-- Xác nhận số thuế phải nộp thêm / được hoàn
+### Bước 8: Xác thực OTP
+- [ ] Nhập mã OTP gửi về số điện thoại đã đăng ký
+- [ ] Hoàn tất nộp tờ khai
 
-### Bước 8: Ký điện tử & Gửi tờ khai
-- Xác nhận OTP → Gửi tờ khai điện tử
-- Tờ khai được gửi đến Tổng cục Thuế ngay lập tức
+### Bước 9: Nộp tiền thuế (nếu phải nộp thêm)
+- [ ] Tại trang chủ eTax Mobile, chọn **"Nộp thuế"**
+- [ ] Chọn **"Tra cứu"** -> xem số thuế phải nộp
+- [ ] Nhấn **"Nộp tất cả"** -> **"Tạo giấy nộp tiền"**
+- [ ] Chọn phương thức thanh toán (liên kết ngân hàng)
 
-### Bước 9: Lưu biên nhận
-- **Screenshot** màn hình xác nhận thành công
-- Hoặc **tải PDF** biên nhận nộp tờ khai
-- Lưu để đối chiếu khi cần
+## SOP: Quyết Toán Qua Cổng Thuế Điện Tử (canhan.gdt.gov.vn)
 
----
+### Bước 1-2: Đăng nhập & Truy cập
+- [ ] Truy cập **canhan.gdt.gov.vn**, đăng nhập
+- [ ] Chọn **"Quyết toán thuế"** -> **"Kê khai trực tuyến"**
 
-## 3. Timeline quan trọng 2026
+### Bước 3-4: Kê khai
+- [ ] Chọn tờ khai **02/QTT-TNCN**
+- [ ] Điền thông tin cá nhân, chọn cơ quan thuế
+- [ ] Khai chi tiết + bảng kê giảm trừ gia cảnh
 
-| Mốc thời gian | Hạn chót |
-|--------------|----------|
-| Quyết toán thuế 2025 | **04/05/2026** (dời từ 30/04 do nghỉ lễ) |
-| Hoàn thuế nhanh | 3–6 ngày làm việc |
-| Hoàn thuế bình thường | Tối đa 45 ngày |
-| Hoàn thuế (kiểm tra trước) | Tối đa 6 tháng |
+### Bước 5: Nộp
+- [ ] Kiểm tra, cam đoan, chọn **"Kết xuất XML"** lưu
+- [ ] Nộp tờ khai + đính kèm tài liệu
 
-**Phạt nếu nộp trễ:**
-- Phạt hành chính: 2–5 triệu VNĐ
-- Phạt chậm nộp thuế: 0,03%/ngày trên số thuế còn thiếu
+## Mẫu Biểu Quan Trọng
 
----
+| Mẫu | Dùng cho |
+|-----|---------|
+| **02/QTT-TNCN** | Cá nhân tự quyết toán thuế TNCN |
+| **02-1/BK-QTT-TNCN** | Bảng kê giảm trừ gia cảnh cho NPT |
+| **05/QTT-TNCN** | Tổ chức chi trả quyết toán cho NLĐ |
+| **08/CK-TNCN** | Cam kết thu nhập chưa đến ngưỡng chịu thuế |
 
-## 4. Quyết toán qua Cổng thuế điện tử (trang web)
+## Lưu Ý Quan Trọng
 
-**URL:** https://canhan.gdt.gov.vn
-
-**Khi nào dùng web thay app?**
-- Hồ sơ phức tạp (nhiều nguồn thu nhập)
-- Cần đính kèm nhiều chứng từ
-- Máy tính dễ nhập liệu hơn điện thoại
-
----
-
-## 5. Trường hợp đặc biệt
-
-### Có 2 công ty trả lương
-1. Công ty A đã quyết toán thay cho khoản thu nhập tại A
-2. Bạn PHẢI tự quyết toán tổng hợp tất cả thu nhập
-3. Thu thập chứng từ khấu trừ thuế từ cả 2 nơi
-
-### Ủy quyền cho DN quyết toán thay
-- Chỉ áp dụng khi **duy nhất 1 nguồn thu nhập**
-- Điền mẫu ủy quyền trước 10/02 của năm sau
-
-### Người nước ngoài làm việc tại VN
-- Cư trú (>183 ngày/năm): nộp thuế như người VN
-- Không cư trú: 20% thu nhập phát sinh tại VN
-
----
-
-*Nguồn: TT 80/2021/TT-BTC | Luật 109/2025/QH15 | canhan.gdt.gov.vn*
+- Nộp muộn nhưng có hoàn thuế: **KHÔNG BỊ PHẠT**
+- Hoàn thuế tự động: hệ thống xử lý trong **3 ngày làm việc** nếu đủ ĐK
+- Đã ủy quyền quyết toán: **KHÔNG dùng được** eTax Mobile để tự quyết toán

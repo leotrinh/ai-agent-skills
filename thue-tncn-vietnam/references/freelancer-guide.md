@@ -1,127 +1,100 @@
-# Hướng Dẫn Thuế cho Freelancer, KOL & Người Bán Hàng Online 2026
-**Căn cứ:** Luật 109/2025/QH15 | NQ 198/2025/QH15
-**Cập nhật:** 25/03/2026
+# Hướng Dẫn Thuế TNCN Cho Freelancer, KOL & Người Bán Hàng Online
 
----
+> **Áp dụng từ:** Kỳ tính thuế 2026 | **Căn cứ:** Luật 109/2025/QH15, NQ 198/2025/QH15
+> **Confidence:** HIGH (nguồn chính thống) | Thuế khoán bãi bỏ từ 01/01/2026
 
-## 1. Tổng quan — 3 nhóm từ 2026
+## Bạn Thuộc Nhóm Nào?
 
-> Từ 2026, chỉ còn **3 nhóm** nhờ ngưỡng miễn thuế tăng lên 500 triệu.
+### Nhóm 1: Freelancer / Nhà sáng tạo nội dung
+- Nhận thu nhập từ dịch vụ (viết bài, thiết kế, lập trình, tư vấn...)
+- Thu nhập từ nước ngoài (Upwork, PayPal, Google, YouTube)
 
-| Doanh thu/năm | TNCN | GTGT | Kê khai | Bạn cần làm |
-|---------------|------|------|---------|-------------|
-| **≤ 500 triệu** | Miễn | Miễn | 1 lần/năm | Đăng ký MST, kê khai DT |
-| **500 tr – 3 tỷ** | **PP1:** % DT **hoặc PP2:** theo lợi nhuận | % DT | Theo quý | Chọn PP phù hợp, kê khai quý |
-| **> 3 tỷ** | Theo lợi nhuận (bắt buộc) | **% DT** (không phải lợi nhuận) | Quý + QT | Bắt buộc sổ sách kế toán |
+### Nhóm 2: KOL / Influencer
+- Thu nhập từ quảng cáo, review sản phẩm, booking
+- Thu nhập từ platform (TikTok, YouTube, Instagram)
 
-> **Lưu ý mục 500 tr – 3 tỷ:** Được lựa chọn 1 trong 2 phương pháp — PP1 (% DT) đơn giản, không cần sổ sách; PP2 (lợi nhuận) cần sổ sách nhưng có lợi hơn nếu chi phí kinh doanh cao.
-> **Lưu ý mục > 3 tỷ:** TNCN tính theo lợi nhuận, nhưng **GTGT vẫn tính theo % doanh thu**.
+### Nhóm 3: Người bán hàng online
+- Bán trên sàn TMĐT (Shopee, Lazada, TikTok Shop)
+- Bán qua mạng xã hội (Facebook, Zalo, livestream)
 
----
+## Decision Tree: Bạn Phải Nộp Thuế Không?
 
-## 2. Thuế suất theo ngành nghề
+```
+Doanh thu/năm bao nhiêu?
+│
+├── ≤ 500 triệu
+│   └── Miễn thuế TNCN + GTGT (chỉ kê khai DT 1 lần/năm)
+│
+├── 500 triệu - 3 tỷ
+│   └── Phải nộp TNCN + GTGT (theo % doanh thu, xem bảng dưới)
+│       └── Kê khai theo quý
+│
+└── > 3 tỷ
+    └── Nộp theo thu nhập (DT - CP), cần sổ sách kế toán
+        └── Kê khai theo quý + quyết toán năm
+```
 
-*(Áp dụng cho DT > 500 triệu/năm)*
+> [!IMPORTANT]
+> **Từ 2026:** Ngưỡng miễn thuế thống nhất **500 tr/năm** (NQ 198/2025/QH15).
+> Thuế khoán bãi bỏ, mọi HKD/CNKD tự kê khai. Xem chi tiết tại `thue-khoan-guide.md`.
 
-| Ngành | TNCN | GTGT | Tổng |
-|-------|------|------|------|
-| Phân phối, cung cấp hàng hóa | 0,5% | 1% | 1,5% |
-| Dịch vụ, xây dựng | 2% | 5% | 7% |
-| Sản xuất, vận tải | 1,5% | 3% | 4,5% |
-| Kinh doanh khác | 1% | 2% | 3% |
-| **Nội dung số** (sáng tạo, quảng cáo, KOL) | **5%** | **5%** | **10%** |
+## Bảng Thuế Suất Theo Ngành Nghề
 
----
+| Hoạt động | Thuế GTGT | Thuế TNCN | Ví dụ |
+|-----------|-----------|-----------|-------|
+| Bán hàng hóa | 1% | 0,5% | Shopee, Lazada, FB bán hàng |
+| Dịch vụ | 5% | 2% | Freelance design, tư vấn, coaching |
+| Sản xuất, vận tải | 3% | 1,5% | Handmade, gia công |
+| Nội dung số | 5% | 5% | YouTube, TikTok, quảng cáo số |
+| Cho thuê tài sản | 5% | 5% | Cho thuê phòng, thiết bị |
 
-## 3. Sàn TMĐT khấu trừ thuế thay (từ 01/07/2025)
+## Khấu Trừ Tại Nguồn (10%)
 
-> **LƯU Ý:** Từ 01/07/2025, Shopee, Lazada, TikTok Shop, Sendo... **khấu trừ thuế thay** cho seller.
+Khi freelancer/KOL nhận thu nhập từ doanh nghiệp:
 
-**Cách kiểm tra:**
-- Vào **Seller Center** của sàn
-- Xem mục "Báo cáo thuế" hoặc "Khấu trừ thuế"
-- Lấy chứng từ khấu trừ để nộp quyết toán
+| Điều kiện | Áp dụng |
+|-----------|---------|
+| Thu nhập >= 2 triệu/lần | DN khấu trừ 10% thuế TNCN tại nguồn |
+| Thu nhập < 2 triệu/lần | Không khấu trừ |
+| Có cam kết 08/CK-TNCN | Tạm không khấu trừ (vẫn phải QT cuối năm) |
 
-**Lưu ý quan trọng:**
-- Sàn chỉ khấu trừ cho thu nhập TRÊN sàn đó
-- Thu nhập từ kênh khác (Facebook, Zalo, offline) → tự kê khai
-- Vẫn cần đăng ký MST cá nhân
+**Mẫu 08/CK-TNCN:** Cam kết thu nhập cả năm chưa đến ngưỡng chịu thuế. Nộp cho DN chi trả.
 
----
+## Người Bán Trên Sàn TMĐT
 
-## 4. KOL / Người sáng tạo nội dung
+Từ 01/07/2025:
+- **Sàn có thanh toán tích hợp** (Shopee, TikTok Shop): Sàn khấu trừ + nộp thuế thay
+- **Kênh không tích hợp** (Facebook, Zalo, livestream): Tự đăng ký MST, tự kê khai
 
-### Nguồn thu nhập và cách xử lý thuế:
+**Lưu ý:** Người bán có DT > 3 tỷ/năm vẫn phải tự quyết toán cuối năm.
 
-| Nguồn thu | Ai khấu trừ | Thuế suất | Ghi chú |
-|-----------|-------------|-----------|---------|
-| DN booking trực tiếp | DN khấu trừ 10% tại nguồn | 10% | Được hoàn nếu DT ≤ 500tr |
-| YouTube AdSense | Tự kê khai | 5% TNCN + 5% GTGT | Google không khấu trừ |
-| Facebook/Meta | Tự kê khai | 5% TNCN + 5% GTGT | Meta không khấu trừ |
-| TikTok Creator Fund | Tự kê khai | 5% TNCN + 5% GTGT | |
-| Affiliate marketing | Tự kê khai | Theo ngành | |
+## Thu Nhập Từ Nước Ngoài
 
-### Ví dụ — KOL 450 triệu/năm:
-- DT 450 tr ≤ 500 tr → **MIỄN THUẾ**
-- DN đã khấu trừ 10% = 45 triệu → **Được hoàn lại toàn bộ** khi quyết toán
+Cá nhân cư trú VN nhận thu nhập từ nước ngoài (YouTube, TikTok, Upwork, Google...):
+- **PHẢI** kê khai và nộp thuế TNCN tại VN
+- Thuế suất: theo bảng ngành nghề ở trên
+- Kê khai: theo quý nếu DT > 500 tr/năm
 
-### Ví dụ — KOL 800 triệu/năm (nội dung số):
-- DT 800 tr > 500 tr → Phải nộp thuế
-- TNCN: 800 tr × 5% = **40 triệu**
-- GTGT: 800 tr × 5% = **40 triệu**
-- Tổng: **80 triệu/năm**
+## Lịch Kê Khai
 
----
+| Mức doanh thu | Tần suất kê khai |
+|--------------|-----------------|
+| ≤ 500 tr/năm | 1 lần/năm (trước 31/01 năm sau) |
+| 500 tr - 3 tỷ/năm | Theo quý (4 lần/năm) |
+| > 3 tỷ/năm | Theo quý + quyết toán năm |
 
-## 5. Người bán hàng online — Chi tiết theo sàn
+## Rủi Ro Nếu Không Kê Khai
 
-### Shopee / Lazada / TikTok Shop:
-- Sàn khấu trừ thuế thay từ 01/07/2025
-- Thuế suất: 0,5% TNCN + 1% GTGT = 1,5% DT
-- **DT ≤ 500 tr:** Miễn, sàn không khấu trừ
-- **DT > 500 tr:** Sàn khấu trừ tự động
+- **Truy thu thuế** + tiền phạt chậm nộp
+- **Phạt hành chính** vi phạm kê khai thuế
+- **Trách nhiệm hình sự** nếu trốn thuế số tiền lớn
+- Cơ quan thuế đang kết nối dữ liệu với **Bộ Công an, Ngân hàng Nhà nước, sàn TMĐT**
 
-### Facebook / Zalo / Instagram (bán trực tiếp):
-- Tự kê khai theo quý nếu DT > 500 tr
-- Cần lưu hồ sơ doanh thu
+## Checklist Cho Freelancer/KOL/Seller
 
----
-
-## 6. Freelancer (Lập trình, Thiết kế, Tư vấn...)
-
-### DT ≤ 500 triệu/năm:
-- ✅ Miễn TNCN + GTGT
-- Chỉ cần kê khai DT 1 lần/năm
-- Nên đăng ký MST cá nhân
-
-### DT > 500 triệu/năm:
-- Nộp theo ngành: thường là **Dịch vụ = 2% TNCN + 5% GTGT = 7%**
-- Kê khai theo quý
-- Có thể đăng ký hộ kinh doanh để quản lý chi phí
-
-### Thu nhập vãng lai từ DN:
-- DN khấu trừ 10% khi thanh toán ≥ 2 triệu/lần
-- Dùng **cam kết 08/CK-TNCN** nếu tổng thu nhập năm < ngưỡng chịu thuế
-
----
-
-## 7. Checklist — Việc cần làm ngay
-
-**Bước 1:** Đăng ký MST cá nhân (nếu chưa có)
-- Tại: canhan.gdt.gov.vn hoặc Cổng DVC Quốc gia
-
-**Bước 2:** Xác định ngưỡng DT của mình
-- ≤ 500 tr: Miễn thuế → chỉ cần kê khai cuối năm
-- > 500 tr: Chuẩn bị kê khai quý
-
-**Bước 3:** Thu thập chứng từ
-- Hóa đơn/hợp đồng với khách hàng
-- Chứng từ khấu trừ thuế từ DN/sàn
-- Báo cáo doanh thu từ sàn TMĐT
-
-**Bước 4:** Kê khai và nộp thuế đúng hạn
-- Xem chi tiết tại: `deadline-tracker.md`
-
----
-
-*Nguồn: Luật 109/2025/QH15 | NQ 198/2025/QH15 | gdt.gov.vn*
+- [ ] Đăng ký mã số thuế cá nhân
+- [ ] Theo dõi tổng doanh thu trong năm
+- [ ] Lưu tất cả hóa đơn, chứng từ thu nhập
+- [ ] Kê khai đúng hạn (theo quý hoặc năm tùy mức DT)
+- [ ] Giữ bản cam kết 08/CK-TNCN (nếu DT < ngưỡng)
+- [ ] Đăng ký NPT để được giảm trừ gia cảnh (nếu có thu nhập lương)

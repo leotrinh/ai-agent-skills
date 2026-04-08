@@ -1,144 +1,53 @@
-# FAQ — 12 Câu Hỏi Thường Gặp về Thuế TNCN 2026
-**Căn cứ:** Luật 109/2025/QH15 | NQ 198/2025/QH15 | NQ 110/2025/UBTVQH15
-**Cập nhật:** 25/03/2026
+# FAQ - Câu Hỏi Thường Gặp Về Thuế TNCN
 
----
+## Câu hỏi phổ biến
 
-## Q1: Thu nhập bao nhiêu thì phải đóng thuế TNCN?
+### Q1: Thu nhập bao nhiêu thì phải nộp thuế TNCN?
+**Nếu là người làm công ăn lương:** Thu nhập sau giảm trừ gia cảnh > 0 thì phải nộp. Với mức giảm trừ 2026, nếu bạn chỉ có 1 bản thân (không NPT), thu nhập <= 15,5 tr/tháng thì chưa phải nộp.
 
-**Người làm công ăn lương:**
-Thu nhập tính thuế > 0 (lương sau khi trừ BHBB + giảm trừ gia cảnh).
+**Nếu là cá nhân kinh doanh:** Doanh thu ≤ 500 tr/năm -> miễn thuế TNCN + GTGT (từ 2026, theo NQ 198/2025/QH15). Từ 500 tr trở lên thì nộp theo % doanh thu.
 
-Ví dụ thực tế: Nếu lương gross 20 triệu, có 1 NPT, không có thu nhập khác:
-- Trừ BHBB: 20 tr × 10,5% = 2,1 tr
-- Trừ bản thân: 15,5 tr
-- Trừ 1 NPT: 6,2 tr
-- TNTT = 20 – 2,1 – 15,5 – 6,2 = **-3,8 triệu** → KHÔNG phải nộp thuế
+### Q2: Tôi bán hàng trên Shopee, có phải tự nộp thuế không?
+Từ 01/07/2025, Shopee khấu trừ + nộp thuế thay bạn. Tuy nhiên nếu DT > 3 tỷ/năm, bạn vẫn phải tự quyết toán cuối năm.
 
-**Cá nhân kinh doanh:**
-Doanh thu ≤ **500 triệu/năm** → Miễn cả TNCN + GTGT (NQ 198/2025/QH15).
-Trên 500 triệu → Nộp theo % doanh thu.
+### Q3: Tôi bán hàng trên Facebook/Zalo, có phải nộp thuế không?
+CÓ, nếu doanh thu > 500 tr/năm (từ 2026). Bạn phải tự đăng ký MST, tự kê khai và nộp thuế vì các kênh này không có tích hợp thanh toán. Nếu DT ≤ 500 tr thì miễn thuế, chỉ kê khai 1 lần/năm.
 
----
+### Q4: Freelancer nhận tiền từ nước ngoài (Upwork, YouTube) có phải nộp thuế VN?
+CÓ. Nếu bạn là cá nhân cư trú tại VN thì phải kê khai và nộp thuế TNCN cho thu nhập từ mọi nguồn, kể cả nước ngoài.
 
-## Q2: Giảm trừ gia cảnh 2026 là bao nhiêu?
+### Q5: Giảm trừ gia cảnh năm 2026 là bao nhiêu?
+- Bản thân: 15,5 tr/tháng (186 tr/năm) 
+- Mỗi NPT: 6,2 tr/tháng
+- Tăng ~40% so với trước
 
-- **Bản thân:** 15,5 triệu/tháng (186 triệu/năm)
-- **Người phụ thuộc (NPT):** 6,2 triệu/tháng/người
+### Q6: Tôi cần đăng ký người phụ thuộc ở đâu?
+- Nộp hồ sơ tại cơ quan thuế quản lý HOẶC thông qua tổ chức chi trả thu nhập
+- Hồ sơ gồm: tờ khai đăng ký NPT + giấy tờ chứng minh quan hệ
 
-**Căn cứ:** NQ 110/2025/UBTVQH15
+### Q7: Lệ phí môn bài năm 2026 có phải nộp không?
+KHÔNG. Từ 01/01/2026, bãi bỏ lệ phí môn bài cho hộ KD, cá nhân KD và doanh nghiệp *(Luật 109/2025/QH15, Điều 35)*. Áp dụng cho tất cả quy mô.
 
-So với 2025: Tăng 40% (bản thân: 11 tr → 15,5 tr; NPT: 4,4 tr → 6,2 tr)
+### Q8: Hoàn thuế mất bao lâu?
+Nếu nộp qua eTax Mobile hoặc cổng thuế điện tử và đủ ĐK, hệ thống tự xử lý hoàn thuế trong **3 ngày làm việc**.
 
----
+### Q9: Nộp quyết toán muộn có bị phạt không?
+- Nếu **được hoàn thuế**: KHÔNG bị phạt
+- Nếu **phải nộp thêm thuế**: bị phạt hành chính + phạt chậm nộp tiền thuế
 
-## Q3: Ai được tính là người phụ thuộc (NPT)?
+### Q10: KOL nhận sản phẩm review (không nhận tiền) có phải nộp thuế không?
+CÓ, nếu sản phẩm có giá trị. Giá trị sản phẩm nhận được tính là thu nhập từ quà tặng. Tuy nhiên trong thực tế rất khó kiểm soát nếu dưới ngưỡng.
 
-- Con dưới 18 tuổi
-- Con từ 18–23 tuổi đang học đại học/cao đẳng (chưa có thu nhập)
-- Cha/mẹ trên tuổi lao động, thu nhập < 1 triệu/tháng
-- Vợ/chồng không có khả năng lao động (thu nhập < 1 triệu/tháng)
+### Q11: Biểu thuế lũy tiến 2026 khác gì so với 2025?
+- Giảm từ 7 bậc -> 5 bậc
+- Bậc 2: 15% giảm -> 10%
+- Bậc 3: 25% giảm -> 20%
+- Khoảng cách bậc nới rộng hơn -> nhiều người nộp ít thuế hơn
 
-**Lưu ý:** Mỗi NPT chỉ được đăng ký với 1 người nộp thuế. Cần đăng ký NPT tại cơ quan thuế.
+### Q12: Cá nhân kinh doanh có được trừ chi phí không?
+CÓ, từ 2026 hộ/cá nhân KD có DT > 3 tỷ/năm được tính thuế theo phương pháp doanh thu trừ chi phí (tương tự doanh nghiệp). Phải có sổ sách kế toán đầy đủ.
 
----
-
-## Q4: Có 2 công ty trả lương, phải làm gì?
-
-Phải **tự quyết toán thuế** cá nhân trước hạn 04/05/2026.
-
-Lý do: Mỗi DN chỉ tính thuế theo lũy tiến cho phần thu nhập tại DN đó, không tổng hợp toàn bộ thu nhập. Bạn phải tổng hợp tự kê khai.
-
-**Việc cần làm:**
-1. Thu thập chứng từ khấu trừ thuế từ cả 2 công ty
-2. Tổng hợp thu nhập
-3. Kê khai quyết toán trên eTax Mobile / canhan.gdt.gov.vn
-
----
-
-## Q5: Hạn quyết toán thuế 2025 là khi nào?
-
-**04/05/2026** (dời từ 30/04 do nghỉ lễ 30/04–01/05/2026).
-
-Phạt nếu trễ:
-- Phạt hành chính: 2–5 triệu VNĐ
-- Phạt chậm nộp: 0,03%/ngày
-
----
-
-## Q6: Bán hàng Shopee, thuế tính sao?
-
-- **DT ≤ 500 tr/năm:** Miễn cả TNCN + GTGT
-- **DT > 500 tr/năm:** Nộp TNCN 0,5% + GTGT 1% = **1,5% DT**
-
-Shopee đã khấu trừ thuế thay từ 01/07/2025. Kiểm tra trên Seller Center > Báo cáo thuế.
-
----
-
-## Q7: Lệ phí môn bài có bị bỏ không?
-
-**CÓ.** Từ 01/01/2026, Luật 109/2025/QH15 (Điều 35) bãi bỏ lệ phí môn bài cho:
-- Hộ kinh doanh (HKD)
-- Cá nhân kinh doanh (CNKD)
-- Doanh nghiệp
-
----
-
-## Q8: eTax Mobile có an toàn không?
-
-**Có.** eTax Mobile là ứng dụng chính thức của Tổng cục Thuế Việt Nam.
-
-- Tải từ App Store (iOS) hoặc Google Play (Android)
-- Đăng nhập qua OTP gửi đến SĐT đã đăng ký với MST
-- Dữ liệu được mã hóa và bảo mật theo tiêu chuẩn chính phủ
-- Không cần đến CQT trực tiếp để quyết toán
-
----
-
-## Q9: KOL, thu nhập booking tính sao?
-
-- DN booking khấu trừ **10% tại nguồn** khi thanh toán
-- Khi quyết toán:
-  - Tổng DT ≤ 500 tr → **Miễn thuế** → Được **hoàn lại toàn bộ** thuế đã khấu trừ
-  - Tổng DT > 500 tr → Nộp 5% TNCN + 5% GTGT = 10% DT
-- YouTube/Facebook: Tự kê khai, platform không khấu trừ
-
----
-
-## Q10: Cam kết 08/CK-TNCN là gì?
-
-**Giấy cam kết thu nhập chưa đến ngưỡng chịu thuế.**
-
-Khi bạn làm part-time/freelance cho 1 DN mà tổng thu nhập năm ước tính chưa đến ngưỡng chịu thuế (sau giảm trừ), bạn có thể điền mẫu 08/CK-TNCN để DN **không khấu trừ 10%** tạm thu.
-
-**Lưu ý:** Nếu cuối năm thực tế vượt ngưỡng, bạn phải tự nộp đủ thuế khi quyết toán.
-
----
-
-## Q11: Hoàn thuế mất bao lâu?
-
-| Trường hợp | Thời gian |
-|-----------|----------|
-| Hoàn thuế nhanh | 3–6 ngày làm việc |
-| Hoàn thuế thông thường | Tối đa 45 ngày |
-| Kiểm tra trước khi hoàn | Tối đa 6 tháng |
-
-Hồ sơ hoàn thuế nhanh thường áp dụng khi: nộp đủ, không có nợ thuế, hồ sơ rõ ràng.
-
----
-
-## Q12: Thuế suất lương — cố định hay lũy tiến?
-
-**Lũy tiến từng phần** — Thu nhập được chia thành nhiều phần, mỗi phần chịu thuế suất khác nhau (5% → 35%).
-
-Ví dụ — TNTT 35 triệu/tháng:
-- 10 tr đầu × 5% = 500.000
-- 20 tr tiếp × 10% = 2.000.000
-- 5 tr còn lại × 20% = 1.000.000
-- **Tổng: 3.500.000 VNĐ/tháng**
-
-**KHÔNG** phải 35 tr × 20% = 7 triệu (cách tính sai phổ biến).
-
----
-
-*Nguồn: Luật 109/2025/QH15 | NQ 198/2025/QH15 | NQ 110/2025/UBTVQH15 | gdt.gov.vn*
+**Lưu ý quan trọng:** Thuế suất thuế TNCN cho cá nhân kinh doanh KHÁC với biểu lũy tiến 5 bậc (5%-35%) dùng cho thu nhập lương:
+- DT 3-50 tỷ: thuế suất **17%** trên lợi nhuận (DT - CP)
+- DT > 50 tỷ: thuế suất **20%** trên lợi nhuận (DT - CP)
+- Biểu lũy tiến 5 bậc (5%-35%) chỉ áp dụng cho **thu nhập từ tiền lương, tiền công**.

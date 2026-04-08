@@ -1,111 +1,175 @@
 ---
 name: thue-tncn-vietnam
-description: Skill tra cứu Thuế Thu Nhập Cá Nhân (TNCN) Việt Nam 2026 - biểu thuế 5 bậc, giảm trừ gia cảnh, quyết toán, freelancer/KOL/seller. Căn cứ Luật 109/2025/QH15.
-version: 1.2.0
+description: Use when user asks about Vietnamese personal income tax (TNCN), tax finalization (quyet toan), dependent deductions (giam tru gia canh), freelancer/KOL/online seller tax, eTax Mobile, or tax deadlines. Covers fiscal year 2026 under Law 109/2025/QH15. Triggers on: thue, TNCN, quyet toan, ke khai, HKD, 500 trieu nguong, expat, KOL, seller.
+version: 1.7.0
 author: Leo
-updated: 2026-03-25
+updated: 2026-04-07
 ---
 
-# Skill: thue-tncn-vietnam
-**Phiên bản:** 1.2.0 | **Cập nhật:** 25/03/2026 | **Tác giả:** Leo
+# Skill: Thuế TNCN Vietnam
+**Phiên bản:** 1.7.0 | **Cập nhật:** 07/04/2026 | **Tác giả:** Leo
 
-## Mô tả
-Skill chuyên biệt về Thuế Thu Nhập Cá Nhân (TNCN) Việt Nam năm 2026, dựa trên Luật 109/2025/QH15 và các nghị quyết liên quan. Cung cấp thông tin có căn cứ pháp lý rõ ràng về biểu thuế 5 bậc, giảm trừ gia cảnh, quyết toán thuế, và hướng dẫn cho freelancer/KOL/người bán hàng online.
+Skill tra cứu thuế TNCN, SOP kê khai/quyết toán, hướng dẫn theo nhóm đối tượng.
 
-## Thay đổi lớn 2026
-- **Biểu thuế 5 bậc** (rút từ 7 bậc) — Luật 109/2025/QH15, Điều 22
-- **Giảm trừ gia cảnh tăng 40%**: bản thân 15,5 tr/tháng, NPT 6,2 tr/tháng — NQ 110/2025/UBTVQH15
-- **Ngưỡng miễn thuế 500 triệu/năm** cho cá nhân kinh doanh — NQ 198/2025/QH15
-- **Thuế khoán bị bãi bỏ** từ 01/01/2026
-- **Sàn TMĐT khấu trừ thuế thay** từ 01/07/2025
+> [!CAUTION]
+> **RISK LEVEL: MEDIUM** - Nội dung liên quan quy định pháp luật nhà nước.
+> - Chỉ mang tính tham khảo, KHÔNG thay thế tư vấn thuế chuyên nghiệp.
+> - Áp dụng: Kỳ tính thuế 2026 | Luật 109/2025/QH15
+> - MỌI output PHẢI đi qua Verification Gate (xem workflow bên dưới).
 
----
+## Quick Navigation
 
-## Hướng dẫn sử dụng Skill
+| Câu hỏi | File tham khảo |
+|---------|---------------|
+| Thuế suất bao nhiêu? Giảm trừ gia cảnh? | `references/tong-quan-thue.md` |
+| Ví dụ tính thuế cụ thể? | `references/vi-du-tinh-thue.md` |
+| Cách quyết toán thuế TNCN? SOP step-by-step? | `references/sop-quyet-toan.md` |
+| Tôi là freelancer/KOL/seller, phải làm sao? | `references/freelancer-guide.md` |
+| Thuế khoán? HKD chuyển kê khai? Mẫu 01/CNKD? | `references/thue-khoan-guide.md` |
+| Hạn nộp thuế khi nào? | `references/deadline-tracker.md` |
+| Câu hỏi thường gặp | `references/faq.md` |
+| Data đã thay đổi gì? Phiên bản? | `references/changelog.md` |
+| Nguồn tham khảo + Confidence Level | `references/sources.md` |
+| Workflow hệ thống + Flow diagrams | `references/system-flow.md` |
+| Người nước ngoài (expat)? Cư trú vs không cư trú? DTA? | `references/nguoi-nuoc-ngoai-guide.md` |
 
-### Khi nào dùng Skill này?
-- Người dùng hỏi về thuế TNCN, biểu thuế, thuế suất
-- Câu hỏi về giảm trừ gia cảnh, người phụ thuộc
-- Hỏi về quyết toán thuế, deadline
-- Freelancer, KOL, seller hỏi về nghĩa vụ thuế
-- Câu hỏi về bán hàng online, sàn TMĐT
-- Hỏi về thuế khoán (đã bãi bỏ), hộ kinh doanh
-
-### Files tham chiếu
-```
-thue-tncn-vietnam/
-├── SKILL.md                    ← File này (điểm vào chính)
-└── references/
-    ├── tong-quan-thue.md       ← Biểu thuế, giảm trừ, ngưỡng miễn thuế
-    ├── vi-du-tinh-thue.md      ← 5 ví dụ tính thuế thực tế
-    ├── sop-quyet-toan.md       ← SOP 9 bước quyết toán eTax Mobile
-    ├── freelancer-guide.md     ← Hướng dẫn Freelancer/KOL/seller online
-    ├── thue-khoan-guide.md     ← Thuế khoán & HKD (đã bãi bỏ, thông tin lịch sử)
-    ├── deadline-tracker.md     ← Lịch nộp thuế 2026
-    ├── faq.md                  ← 12 câu hỏi thường gặp có đáp án
-    ├── system-flow.md          ← Sơ đồ quy trình & 3 Verification Gates
-    ├── changelog.md            ← Lịch sử cập nhật
-    └── sources.md              ← Nguồn tham khảo chính thống
-```
-
-### Luồng xử lý câu hỏi
+## Workflow (7 bước, có 3 Verification Gate)
 
 ```
-1. NHẬN câu hỏi thuế TNCN
-2. GATE 1 - Freshness Check: Dữ liệu có cập nhật 2026 không?
-3. ĐỌC file reference liên quan
-4. GATE 2 - Cross-Verify: So sánh câu trả lời với dữ liệu
-5. GATE 3 - Source Citation: Thêm căn cứ pháp lý
-6. TRẢ LỜI kèm disclaimer
+1. User hỏi về thuế
+2. Xác định nhóm đối tượng
+      │
+      ▼
+┌─────────────────────────────────────┐
+│ 🔀 MULTI-INCOME CHECK              │
+│ - User có > 1 nguồn thu nhập?      │
+│ - Có lương + freelance/kinh doanh? │
+│ - CÓ -> Load TẤT CẢ file liên quan│
+│ - KHÔNG -> Load 1 file chính       │
+└─────────────────────────────────────┘
+      │
+      ▼
+3. Load reference file phù hợp
+   (nếu multi-income: load đồng thời nhiều file)
+      │
+      ▼
+┌─────────────────────────────────┐
+│ 🔒 GATE 1: FRESHNESS CHECK     │
+│ - Kiểm tra changelog.md        │
+│ - Data > 6 tháng? -> CẢNH BÁO  │
+│ - Hết expiry date? -> DỪNG     │
+└─────────────────────────────────┘
+      │
+      ▼
+4. Soạn câu trả lời
+   (nếu có phép tính thuế: PHẢI tách từng bước)
+      │
+      ▼
+┌─────────────────────────────────┐
+│ 🔒 GATE 2: CROSS-VERIFY        │
+│ - Số liệu khớp reference?      │
+│ - Mâu thuẫn giữa các file?     │
+│ - Không chắc chắn? -> Nói thẳng│
+│ - Phép tính đúng từng bước?    │
+└─────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────┐
+│ 🔒 GATE 3: SOURCE CITATION     │
+│ - Ghi căn cứ pháp lý           │
+│ - Ghi ngày cập nhật data       │
+│ - Kèm link nguồn chính thống   │
+│ - Kèm disclaimer bắt buộc      │
+└─────────────────────────────────┘
+      │
+      ▼
+5. Output + disclaimer
 ```
 
----
+## Anti-Hallucination Rules
 
-## 5 Quy tắc Anti-Hallucination (BẮT BUỘC)
+> [!WARNING]
+> **CẤM TUYỆT ĐỐI** vi phạm các rule sau:
 
-> ⛔ **RULE 1:** CẤM bịa số liệu thuế — mọi con số PHẢI có trong reference files
-> ⛔ **RULE 2:** CẤM khẳng định khi không chắc — dùng "theo dữ liệu hiện có" hoặc "cần xác nhận với CQT"
-> ⛔ **RULE 3:** CẤM tự suy luận quy định mới ngoài phạm vi tài liệu
-> ⛔ **RULE 4:** CẤM trả lời ngoài phạm vi thuế TNCN Việt Nam 2026
-> ✅ **RULE 5:** MỌI con số PHẢI kèm căn cứ pháp lý (Luật/NQ/TT)
+| # | Rule | Fallback |
+|---|------|----------|
+| 1 | KHÔNG BAO GIỜ bịa số liệu thuế (thuế suất, ngưỡng, mức giảm trừ) | "Tôi không chắc, vui lòng kiểm tra tại gdt.gov.vn" |
+| 2 | KHÔNG BAO GIỜ khẳng định khi không chắc chắn | "Tôi không chắc, vui lòng kiểm tra tại gdt.gov.vn" |
+| 3 | KHÔNG tự suy luận quy định mới khi chưa có trong reference | "Quy định này chưa có trong skill, cần cập nhật" |
+| 4 | KHÔNG trả lời câu hỏi ngoài phạm vi skill (thuế TNDN, thuế XNK...) | "Skill này chỉ cover thuế TNCN" |
+| 5 | MỌI con số PHẢI kèm căn cứ pháp lý | "Theo Luật 109/2025/QH15, Điều X..." |
+| 6 | KHÔNG tính nhẩm/gộp thuế lũy tiến - tách từng bước, khuyên dùng Excel đối soát | Chạy Calculation Checklist bên dưới |
+| 7 | User nhiều nguồn thu nhập → load đồng thời nhiều file reference | Load tất cả file liên quan |
+| 8 | Người làm công 1 nơi → hỏi "Đã ủy quyền QT cho công ty chưa?" trước khi đưa SOP | Không đưa SOP nếu đã ủy quyền |
 
----
+### Calculation Checklist (Bắt buộc chạy trước khi output phép tính)
 
-## 3 Verification Gates
+```
+□ 1. Tổng thu nhập: ghi rõ gross hay net?
+□ 2. BHBB tách riêng: BHXH (8%) + BHYT (1,5%) trên trần 46,8tr
+                       BHTN (1%) trên lương thực tế (trần theo vùng)
+□ 3. Giảm trừ bản thân: 15,5 tr/tháng (đã ghi?)
+□ 4. Giảm trừ NPT: 6,2 tr x số NPT (đã hỏi số NPT?)
+□ 5. Thu nhập tính thuế = (1) - (2) - (3) - (4), nếu < 0 → thuế = 0
+□ 6. Áp thuế TỪNG BẬC riêng biệt (5 bậc 2026):
+     10tr đầu x 5%, 20tr tiếp x 10%, 30tr tiếp x 20%,
+     40tr tiếp x 30%, phần còn lại x 35%
+□ 7. Cộng tổng thuế các bậc
+□ 8. Khuyên user: "Đối soát lại bằng Excel hoặc eTax"
+```
 
-| Gate | Tên | Nhiệm vụ |
-|------|-----|----------|
-| Gate 1 | Freshness Check | Kiểm tra dữ liệu còn mới không (2026?) |
-| Gate 2 | Cross-Verify | So sánh câu trả lời với dữ liệu trong reference |
-| Gate 3 | Source Citation | Buộc trích nguồn pháp lý + disclaimer |
+## Nhóm Đối Tượng
 
----
+| Nhóm | Đặc điểm | File chính |
+|------|---------|-----------|
+| Người làm công ăn lương | Thu nhập từ lương, tiền công. **Hỏi trước: đã ủy quyền QT cho công ty chưa?** Nếu rồi -> không cần tự quyết toán | `tong-quan-thue.md` + `sop-quyet-toan.md` |
+| Freelancer/KOL | Thu nhập từ dịch vụ, nội dung số | `freelancer-guide.md` |
+| Người bán hàng online | Shopee, Facebook, Zalo, TikTok Shop | `freelancer-guide.md` |
+| Người nước ngoài (CW/KCT) | Expat, chuyên gia, người lao động nước ngoài | `nguoi-nuoc-ngoai-guide.md` |
 
-## Quick Reference (Dữ liệu chốt 2026)
+## Số Liệu Nhanh (2026)
 
-### Biểu thuế lũy tiến 5 bậc (Luật 109/2025/QH15, Điều 22)
-| Bậc | Thu nhập tính thuế/tháng | Thuế suất |
-|-----|--------------------------|-----------|
-| 1   | Đến 10 triệu             | 5%        |
-| 2   | 10 – 30 triệu            | 10%       |
-| 3   | 30 – 50 triệu            | 20%       |
-| 4   | 50 – 80 triệu            | 25%       |
-| 5   | Trên 80 triệu            | 35%       |
+| Chỉ số | Giá trị | Căn cứ |
+|--------|---------|--------|
+| Giảm trừ bản thân | 15,5 tr/tháng (186 tr/năm) | NQ 110/2025/UBTVQH15 |
+| Giảm trừ NPT | 6,2 tr/tháng | NQ 110/2025/UBTVQH15 |
+| Ngưỡng miễn thuế HKD/CNKD | **500 tr/năm** (cũ: 100tr TNCN, 200tr GTGT) | NQ 198/2025/QH15 |
+| Thuế khoán | **BÃI BỎ** từ 01/01/2026 | NQ 198/2025/QH15 |
+| Biểu thuế lũy tiến | 5 bậc (5% - 35%) | Luật 109/2025/QH15, Đ.22 |
+| Lệ phí môn bài | **BÃI BỎ** từ 01/01/2026 | Luật 109/2025/QH15, Đ.35 |
+| Hạn quyết toán 2025 | 30/04/2026 (-> 04/05/2026) | TT 80/2021/TT-BTC |
 
-### Giảm trừ gia cảnh (NQ 110/2025/UBTVQH15)
-| Đối tượng | Mức giảm trừ |
-|-----------|-------------|
-| Bản thân  | 15,5 triệu/tháng (186 triệu/năm) |
-| Người phụ thuộc | 6,2 triệu/tháng/người |
+## Mandatory Disclaimer (Bắt buộc kèm theo mọi output)
 
-### Ngưỡng doanh thu miễn thuế (NQ 198/2025/QH15)
-| Doanh thu/năm | TNCN | GTGT |
-|---------------|------|------|
-| ≤ 500 triệu   | Miễn | Miễn |
-| 500 tr – 3 tỷ | PP1: % DT **hoặc** PP2: theo lợi nhuận | % DT |
-| > 3 tỷ        | Theo lợi nhuận (bắt buộc) | % DT (không phải lợi nhuận) |
+```
+⚠️ Thông tin chỉ mang tính tham khảo, KHÔNG thay thế tư vấn thuế chuyên nghiệp.
+Căn cứ: [ghi rõ luật/NĐ/TT]. Data cập nhật: 07/04/2026.
+Kiểm tra lại tại: https://gdt.gov.vn hoặc https://canhan.gdt.gov.vn
+```
 
----
+## Common Mistakes
 
-## Disclaimer bắt buộc
-> 📌 *Thông tin chỉ mang tính tham khảo, KHÔNG thay thế tư vấn thuế chuyên nghiệp. Căn cứ: Luật 109/2025/QH15, NQ 198/2025/QH15, NQ 110/2025/UBTVQH15. Kiểm tra tại: gdt.gov.vn*
+| Lỗi thường gặp | Cách xử lý đúng |
+|---------------|----------------|
+| Nhầm thuế khoán cũ (trước 2026) vs kê khai mới | Thuế khoán **bãi bỏ** từ 01/01/2026 - HKD dưới 500tr miễn thuế, trên 500tr kê khai theo thực tế |
+| Áp dụng ngưỡng miễn thuế cũ (100tr/200tr) | Ngưỡng mới 2026 là **500 triệu/năm** (NQ 198/2025/QH15) |
+| Tính giảm trừ gia cảnh theo mức cũ (11tr) | Mức 2026 là **15,5 triệu/tháng** |
+| Trả lời câu hỏi thuế TNDN / thuế XNK | Nói rõ: skill chỉ cover TNCN, không phải TNDN hay thuế khác |
+| Suy luận quy định mới chưa có trong reference | Nói: "Chưa có trong skill, kiểm tra tại gdt.gov.vn" |
+
+## Bundled References (Self-contained)
+
+| File | Nội dung | Confidence |
+|------|---------|------------|
+| `references/tong-quan-thue.md` | Biểu thuế 5 bậc, giảm trừ gia cảnh, 3 ngưỡng doanh thu | 🟢 HIGH |
+| `references/vi-du-tinh-thue.md` | 7 ví dụ tính thuế (lương, freelancer, KOL, seller, expat) | 🟡 MEDIUM |
+| `references/sop-quyet-toan.md` | SOP quyết toán eTax Mobile (9 bước) + Cổng thuế (5 bước) | 🟢 HIGH |
+| `references/freelancer-guide.md` | Decision tree 5-tier, thuế KOL/freelancer/seller | 🟢 HIGH |
+| `references/deadline-tracker.md` | Lịch nộp thuế 2026 (quý + năm) | 🟢 HIGH |
+| `references/faq.md` | 12 câu hỏi thường gặp | 🟡 MEDIUM |
+| `references/thue-khoan-guide.md` | Thuế khoán bãi bỏ 2026, HKD chuyển kê khai, mẫu biểu | 🟢 HIGH |
+| `references/changelog.md` | Lịch sử thay đổi, version, expiry dates | 🟢 HIGH |
+| `references/sources.md` | Tất cả nguồn tham khảo + confidence levels | 🟢 HIGH |
+| `references/nguoi-nuoc-ngoai-guide.md` | Thuế TNCN người nước ngoài: cư trú/KCT, DTA, flat 20% | 🟢 HIGH |
+
+> Skill self-contained, không phụ thuộc skill bên ngoài. v1.7.0 | 07/04/2026.

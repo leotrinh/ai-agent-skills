@@ -1,117 +1,134 @@
-# Tổng Quan Thuế TNCN 2026
-**Căn cứ:** Luật 109/2025/QH15 | NQ 198/2025/QH15 | NQ 110/2025/UBTVQH15
-**Cập nhật:** 25/03/2026
+# Tổng Quan Thuế Thu Nhập Cá Nhân (TNCN) Việt Nam
 
----
+> **Áp dụng:** Kỳ tính thuế 2026 | **Căn cứ:** Luật 109/2025/QH15, NQ 198/2025/QH15
+> **Cập nhật lần cuối:** 25/03/2026 | **Confidence:** HIGH (nguồn chính thống)
 
-## 1. Biểu thuế lũy tiến 5 bậc (2026)
+> [!WARNING]
+> Tài liệu chỉ mang tính tham khảo, KHÔNG thay thế tư vấn thuế chuyên nghiệp.
 
-> **THAY ĐỔI LỚN:** Rút từ 7 bậc xuống 5 bậc (Luật 109/2025/QH15, Điều 22)
+## 1. Ai Phải Nộp Thuế TNCN?
+
+### Cá nhân cư trú
+- Có mặt tại VN từ 183 ngày trở lên trong năm dương lịch/12 tháng liên tục
+- Hoặc có nơi ở thường xuyên tại VN
+
+### Đối tượng tự quyết toán
+- Thu nhập từ tiền lương, tiền công từ **2 nơi trở lên**
+- Số thuế phải nộp thêm > **50.000 VNĐ**
+- Muốn hoàn thuế/bù trừ kỳ tiếp theo
+
+## 2. Biểu Thuế Lũy Tiến Từng Phần (2026)
+
+**Thay đổi lớn:** Rút từ 7 bậc → **5 bậc** *(Theo Luật 109/2025/QH15, Điều 22)*
 
 | Bậc | Thu nhập tính thuế/tháng | Thuế suất | So với 2025 |
 |-----|--------------------------|-----------|-------------|
-| 1   | Đến 10 triệu             | 5%        | Gộp bậc 1+2 cũ |
-| 2   | 10 – 30 triệu            | 10%       | Gộp bậc 3+4 cũ |
-| 3   | 30 – 50 triệu            | 20%       | Tương đương bậc 5 cũ |
-| 4   | 50 – 80 triệu            | 25%       | MỚI, trước là 30% |
-| 5   | Trên 80 triệu            | 35%       | Giữ nguyên |
+| 1 | Đến 10 triệu | 5% | Giữ nguyên |
+| 2 | 10 - 30 triệu | 10% | Giảm (cũ: 10-18tr 10%, 18-32tr 15%) |
+| 3 | 30 - 60 triệu | 20% | Giảm (cũ: 32-52tr 20%, 52-80tr 25%) |
+| 4 | 60 - 100 triệu | 30% | Gộp bậc (cũ: bậc 6: 30%) |
+| 5 | Trên 100 triệu | 35% | Giữ nguyên |
 
-**Cách tính lũy tiến từng phần:**
-Thu nhập tính thuế chia thành nhiều phần, mỗi phần chịu thuế suất riêng. KHÔNG áp dụng 1 mức thuế cho toàn bộ thu nhập.
+> Thu nhập tính thuế = Thu nhập chịu thuế - Giảm trừ gia cảnh - Bảo hiểm bắt buộc - Quỹ từ thiện
 
-**Ví dụ nhanh — Thu nhập tính thuế 35 triệu/tháng:**
-- Bậc 1: 10 tr × 5% = 500.000
-- Bậc 2: 20 tr × 10% = 2.000.000
-- Bậc 3: 5 tr × 20% = 1.000.000
-- **Tổng: 3.500.000 VNĐ/tháng**
+## 3. Giảm Trừ Gia Cảnh (Từ 01/01/2026)
 
----
+| Đối tượng | Mức cũ (2025) | Mức mới (2026) | Tăng |
+|-----------|---------------|----------------|------|
+| Bản thân NNT | 11 tr/tháng (132 tr/năm) | **15,5 tr/tháng (186 tr/năm)** | +40% |
+| Mỗi người phụ thuộc | 4,4 tr/tháng | **6,2 tr/tháng** | +40% |
 
-## 2. Giảm trừ gia cảnh 2026
+**Căn cứ:** Nghị quyết 110/2025/UBTVQH15
 
-**Căn cứ:** NQ 110/2025/UBTVQH15
+## 4. Trần Đóng Bảo Hiểm Bắt Buộc (2026)
 
-| Mục | Mức giảm trừ | Ghi chú |
-|-----|-------------|---------|
-| Bản thân | **15,5 triệu/tháng** (186 triệu/năm) | Tăng 40% so với 2025 |
-| Người phụ thuộc (NPT) | **6,2 triệu/tháng/người** | Tăng 40% so với 2025 |
+> [!IMPORTANT]
+> BHXH/BHYT và BHTN có **trần đóng khác nhau**. Nhiều người nhầm lẫn áp dụng chung 1 mức trần.
 
-**So sánh với 2025:**
-- Bản thân 2025: 11 triệu/tháng → 2026: 15,5 triệu/tháng (+40%)
-- NPT 2025: 4,4 triệu/tháng → 2026: 6,2 triệu/tháng (+40%)
+### Tỷ lệ đóng (phần người lao động)
 
-**Ai được tính là người phụ thuộc (NPT)?**
-- Con dưới 18 tuổi
-- Con từ 18–23 tuổi đang học đại học/cao đẳng
-- Cha/mẹ trên tuổi lao động, thu nhập < 1 triệu/tháng
-- Vợ/chồng không có khả năng lao động
+| Loại | Tỷ lệ NLĐ | Trần tính đóng | Căn cứ trần |
+|------|-----------|---------------|-------------|
+| **BHXH** | 8% | 20 x lương cơ sở = **46.800.000** | NĐ 73/2024/NĐ-CP (lương cơ sở 2.340.000) |
+| **BHYT** | 1,5% | 20 x lương cơ sở = **46.800.000** | NĐ 73/2024/NĐ-CP |
+| **BHTN** | 1% | 20 x lương tối thiểu vùng | NĐ 293/2025/NĐ-CP + Luật Việc làm 2025 |
 
----
+### Trần BHTN theo vùng (từ 01/01/2026, NĐ 293/2025/NĐ-CP)
 
-## 3. Các khoản giảm trừ khác
+| Vùng | Lương tối thiểu vùng | Trần BHTN (20 lần) |
+|------|----------------------|-------------------|
+| **Vùng I** | 5.310.000 | **106.200.000** |
+| **Vùng II** | 4.730.000 | **94.600.000** |
+| **Vùng III** | 4.140.000 | **82.800.000** |
+| **Vùng IV** | 3.700.000 | **74.000.000** |
 
-### Bảo hiểm bắt buộc (BHBB)
-Người lao động đóng: 10,5% lương (BHXH 8% + BHYT 1,5% + BHTN 1%)
-- **Giới hạn đóng BHXH/BHTN:** tối đa 20 × mức lương cơ sở = 46,8 triệu/tháng (năm 2026)
-- BHBB được khấu trừ toàn bộ trước khi tính thuế
+### Tỷ lệ đóng (phần người sử dụng lao động)
 
-### Các khoản khác được giảm trừ
-- Đóng góp từ thiện, nhân đạo, khuyến học (có chứng từ)
-- Phí bảo hiểm nhân thọ tự nguyện (tối đa 1 triệu/tháng)
+| Loại | Tỷ lệ NSDLĐ | Trần tính đóng |
+|------|-------------|---------------|
+| **BHXH** | 17,5% | 46.800.000 (20 x lương cơ sở) |
+| **BHYT** | 3% | 46.800.000 |
+| **BHTN** | 1% | 20 x lương tối thiểu vùng (theo bảng trên) |
 
----
+**Lưu ý:**
+- Trần BHXH/BHYT = 20 x lương cơ sở (2.340.000) = **46.800.000 VNĐ**
+- Trần BHTN = 20 x lương tối thiểu vùng (khác nhau theo vùng)
+- Với lương ≤ 46,8 triệu: BHBB tính trên lương thực tế, tổng NLĐ đóng = 10,5%
+- Với lương > 46,8 triệu: BHXH/BHYT tính trên trần 46,8tr, BHTN tính trên lương thực tế (nếu chưa vượt trần vùng)
 
-## 4. Ngưỡng doanh thu miễn thuế — Cá nhân kinh doanh
+## 5. Ngưỡng Doanh Thu HKD/CNKD (Cập nhật 2026)
 
-> **THAY ĐỔI LỚN:** Từ 01/01/2026, thuế khoán bị bãi bỏ (NQ 198/2025/QH15). Ngưỡng miễn thuế thống nhất 500 triệu/năm.
+> [!IMPORTANT]
+> **THAY ĐỔI LỚN:** Từ 01/01/2026, thuế khoán bị bãi bỏ (NQ 198/2025/QH15).
+> Ngưỡng miễn thuế thống nhất: **500 tr/năm** (cả TNCN và GTGT).
 
-| Doanh thu/năm | Thuế TNCN | Thuế GTGT | Kê khai |
-|---------------|-----------|-----------|---------|
-| ≤ 500 triệu   | Miễn | Miễn | 1 lần/năm |
-| 500 tr – 3 tỷ | **PP1:** % DT — hoặc **PP2:** theo lợi nhuận (nếu có sổ sách) | % DT | Theo quý |
-| > 3 tỷ        | Theo lợi nhuận (bắt buộc sổ sách) | **% DT** (không theo lợi nhuận) | Quý + quyết toán |
+| Doanh thu/năm | Thuế GTGT | Thuế TNCN | Ghi chú |
+|---------------|-----------|-----------|--------|
+| **≤ 500 triệu** | **Miễn** | **Miễn** | Chỉ kê khai 1 lần/năm |
+| **500 tr - 3 tỷ** | % trực tiếp trên doanh thu | **Lựa chọn:** % DT hoặc Lợi nhuận × 15% | Kê khai theo quý |
+| **> 3 tỷ - 50 tỷ** | Phương pháp khấu trừ | Lợi nhuận × 17% (bắt buộc) | Kê khai & QT năm |
+| **> 50 tỷ** | Phương pháp khấu trừ | Lợi nhuận × 20% (bắt buộc) | Kê khai & QT năm |
 
-**Lưu ý quan trọng:**
-- **500 tr – 3 tỷ:** Được **lựa chọn 1 trong 2 phương pháp**: (PP1) nộp % doanh thu — đơn giản, không cần sổ sách; hoặc (PP2) nộp theo lợi nhuận thực tế — cần sổ sách kế toán, có lợi hơn nếu chi phí cao.
-- **Trên 3 tỷ:** TNCN bắt buộc tính theo lợi nhuận, nhưng **GTGT vẫn tính theo % doanh thu** (không phải lợi nhuận).
-- Thuế khoán (CQT ấn định) không còn từ 01/01/2026. Mọi HKD/CNKD tự kê khai.
+**Giải thích:**
+- **DT ≤ 500 tr/năm**: Miễn hoàn toàn thuế, chỉ nộp Mẫu 01/TKN-CNKD.
+- **DT 500 tr - 3 tỷ**: Thuế GTGT nộp theo % DT. Thuế TNCN được chọn Kê khai chi phí (Lợi nhuận x 15%) hoặc nộp theo % DT.
+- **DT > 3 tỷ**: Bắt buộc nộp GTGT theo **phương pháp khấu trừ** (Đầu ra - Đầu vào) và Thuế TNCN theo **lợi nhuận thực tế** (17% hoặc 20%). Phải có sổ sách kế toán đầy đủ.
 
----
+> Xem chi tiết tại `thue-khoan-guide.md`
 
-## 5. Thu nhập từ tiền lương, tiền công — Cơ cấu tính thuế
+**Mọi mức:**
+- Vẫn phải kê khai doanh thu 1 lần/năm (trước 31/01 năm sau)
+- Vẫn phải đăng ký mã số thuế cá nhân
 
-**Công thức:**
-```
-Thu nhập chịu thuế = Tổng thu nhập - Các khoản miễn thuế
-Thu nhập tính thuế = Thu nhập chịu thuế - Giảm trừ gia cảnh - BHBB - Các khoản giảm trừ khác
-Thuế TNCN = Tính theo biểu lũy tiến 5 bậc
-```
+## 6. Thuế Suất Theo Ngành Nghề (Cá Nhân Kinh Doanh, DT > 500 tr)
 
-**Các khoản KHÔNG chịu thuế TNCN từ lương:**
-- Phụ cấp độc hại, nguy hiểm (theo quy định NN)
-- Phụ cấp đặc thù ngành nghề
-- Tiền ăn ca không vượt mức quy định
-- Tiền làm thêm giờ vào ban đêm, ngày lễ (phần trả cao hơn ngày thường)
+| Ngành nghề | Thuế GTGT | Thuế TNCN | Tổng |
+|-----------|-----------|-----------|------|
+| Phân phối, cung cấp hàng hóa | 1% | 0,5% | 1,5% |
+| Sản xuất, vận tải, xây dựng có bao thầu NVL | 3% | 1,5% | 4,5% |
+| Dịch vụ, xây dựng không bao thầu NVL | 5% | 2% | 7% |
+| Cho thuê tài sản, đại lý bảo hiểm, bán hàng đa cấp | 5% | 5% | 10% |
+| Nội dung số (giải trí, game, quảng cáo số) | 5% | 5% | 10% |
+| Hoạt động kinh doanh khác | 1% | 1% | 2% |
 
----
+## 7. Các Mốc Doanh Thu Quan Trọng
 
-## 6. Khấu trừ tại nguồn
+| Doanh thu/năm | Nghĩa vụ |
+|---------------|---------|
+| < 500 tr | Miễn thuế, chỉ kê khai 1 lần/năm |
+| 500 tr - 3 tỷ | Nộp thuế theo % doanh thu (bảng trên), kê khai theo quý |
+| > 3 tỷ | Tính thuế theo thu nhập (DT - CP), phải có sổ sách kế toán |
 
-| Loại thu nhập | Ai khấu trừ | Thuế suất |
-|---------------|-------------|-----------|
-| Lương từ DN | DN khấu trừ theo lũy tiến | 5%–35% |
-| Thu nhập vãng lai từ DN | DN khấu trừ 10% | 10% |
-| Bán hàng trên sàn TMĐT | Sàn khấu trừ thay (từ 01/07/2025) | Theo ngành |
-| YouTube/Facebook/Google | Tự kê khai | Tự nộp |
+## 8. Thay Đổi Khác
 
-**Cam kết 08/CK-TNCN:** Giấy cam kết thu nhập chưa đến ngưỡng chịu thuế. DN không khấu trừ 10% tạm thu. Phù hợp cho lao động part-time có nhiều nguồn thu nhỏ.
+- **Bãi bỏ thuế khoán** từ 01/01/2026 - mọi HKD/CNKD chuyển sang kê khai tự nộp (NQ 198/2025/QH15)
+- **Bãi bỏ lệ phí môn bài** từ 01/01/2026 - áp dụng cho hộ KD, cá nhân KD và doanh nghiệp (Luật 109/2025/QH15, Điều 35)
+- **Hoàn thuế:**
+  - Hoàn thuế tự động (hồ sơ đơn giản, đủ ĐK): **khoảng 3-6 ngày làm việc**
+  - Hoàn thuế có kiểm tra (hồ sơ phức tạp): **tối đa 45 ngày** kể từ ngày nhận đủ hồ sơ
+  - Hoàn thuế phải kiểm tra trước: **tối đa 6 tháng** (trường hợp rủi ro cao)
+- **Sàn TMĐT khấu trừ thuế thay người bán** (Shopee, TikTok Shop...) từ 01/07/2025
+- Cá nhân chậm nộp quyết toán nhưng có hoàn thuế: **không bị phạt hành chính**
 
----
-
-## 7. Lệ phí môn bài
-
-> **BÃI BỎ từ 01/01/2026** — Luật 109/2025/QH15, Điều 35 bãi bỏ cho hộ KD, CNKD và doanh nghiệp.
-
----
-
-*Nguồn: Luật 109/2025/QH15 | NQ 198/2025/QH15 | NQ 110/2025/UBTVQH15 | gdt.gov.vn*
+> [!NOTE]
+> Thời gian hoàn thuế phụ thuộc vào mức độ phức tạp hồ sơ. Con số "3 ngày" chỉ áp dụng cho trường hợp đơn giản nhất.
