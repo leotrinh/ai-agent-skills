@@ -1,6 +1,6 @@
 ---
 name: thue-tncn-vietnam
-description: Use when user asks about Vietnamese personal income tax (TNCN), tax finalization (quyet toan), dependent deductions (giam tru gia canh), freelancer/KOL/online seller tax, eTax Mobile, or tax deadlines. Covers fiscal year 2026 under Law 109/2025/QH15. Triggers on: thue, TNCN, quyet toan, ke khai, HKD, 500 trieu nguong, expat, KOL, seller.
+description: "Use when user asks about Vietnamese personal income tax (TNCN), tax finalization (quyet toan), dependent deductions (giam tru gia canh), freelancer/KOL/online seller tax, eTax Mobile, or tax deadlines. Covers fiscal year 2026 under Law 109/2025/QH15. Triggers on: thue, TNCN, quyet toan, ke khai, HKD, 500 trieu nguong, expat, KOL, seller."
 version: 1.7.0
 author: Leo
 updated: 2026-04-07
