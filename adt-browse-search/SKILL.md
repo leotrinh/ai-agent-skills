@@ -26,7 +26,7 @@ Run with: `~\.claude\skills\.venv\Scripts\python.exe ~/.claude/skills/adt-browse
 | Param | Description | Example |
 |-------|-------------|---------|
 | `--url` | SAP system base URL | `https://host:44300` |
-| `--user` | SAP logon user | `E2908` |
+| `--user` | SAP logon user | `LEOS4` |
 | `--pwd` | SAP password | `***` |
 | `--client` | SAP client (default: `100`) | `100` |
 | `--lang` | Logon language (default: `EN`) | `EN` |

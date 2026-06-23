@@ -142,7 +142,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog="""
 examples:
   Search all programs starting with Z:
-    adt-client.py --url https://host:44300 --user E2908 --pwd *** search "Z*" --type PROG/P
+    adt-client.py --url https://host:44300 --user LEOS4 --pwd *** search "Z*" --type PROG/P
 
   List all objects in $TMP:
     adt-client.py ... objects '$TMP'
