@@ -64,6 +64,8 @@ def cmd_search(s: requests.Session, url: str, args) -> list | dict:
         params["objectType"] = args.type
     if args.package:
         params["packageName"] = args.package
+    if hasattr(args, "author") and args.author:
+        params["author"] = args.author
     resp = s.get(
         f"{url}/sap/bc/adt/repository/informationsystem/search",
         params=params,
@@ -100,6 +102,38 @@ def cmd_packages(s: requests.Session, url: str, args) -> dict:
     # Parse sub-packages from nodestructure XML
     refs = re.findall(r'technicalName="([^"]*)"[^>]*description="([^"]*)"', resp.text)
     return {"parent": args.package, "subpackages": [{"name": n, "description": d} for n, d in refs]}
+
+
+def cmd_packages_by_responsible(s: requests.Session, url: str, args) -> list:
+    """List all Z* packages where adtcore:responsible matches the given user."""
+    # Step 1: get all Z* packages (or pattern from args)
+    pattern = args.pattern or "Z*"
+    params = {"operation": "quickSearch", "query": pattern, "objectType": "DEVC/K", "maxResults": args.max}
+    resp = s.get(
+        f"{url}/sap/bc/adt/repository/informationsystem/search",
+        params=params,
+        headers={"Accept": "application/xml"},
+    )
+    packages = parse_xml_refs(resp.text)
+
+    # Step 2: fetch each package and check responsible
+    result = []
+    for pkg in packages:
+        name = pkg["name"].lower().replace("/", "%2f")
+        r = s.get(f"{url}/sap/bc/adt/packages/{name}")
+        if r.status_code == 200:
+            m = re.search(r'adtcore:responsible="([^"]*)"', r.text)
+            responsible = m.group(1) if m else ""
+            if responsible.upper() == args.responsible.upper():
+                m_desc = re.search(r'adtcore:description="([^"]*)"', r.text)
+                m_created = re.search(r'adtcore:createdBy="([^"]*)"', r.text)
+                result.append({
+                    "name": pkg["name"],
+                    "responsible": responsible,
+                    "created_by": m_created.group(1) if m_created else "",
+                    "description": m_desc.group(1) if m_desc else "",
+                })
+    return result
 
 
 def cmd_source(s: requests.Session, url: str, args) -> dict:
@@ -153,8 +187,8 @@ examples:
   Read source of ZCDS_VIEW:
     adt-client.py ... source ZCDS_VIEW --type PROG/P
 
-  List open transports for user P07084:
-    adt-client.py ... transports --owner P07084
+  List open transports for user DEVUSER:
+    adt-client.py ... transports --owner DEVUSER
         """,
     )
     # Connection params (global)
@@ -171,6 +205,7 @@ examples:
     sp.add_argument("query", help='Search query — use * for all, e.g. "ZCL*"')
     sp.add_argument("--type", help="Object type, e.g. PROG/P  CLAS/OC  DEVC/K  TABL/DT")
     sp.add_argument("--package", help="Filter by package name")
+    sp.add_argument("--author", help="Filter by author/responsible user, e.g. LEOS4")
     sp.add_argument("--max", type=int, default=100, metavar="N", help="Max results (default: 100)")
 
     # objects
@@ -186,6 +221,12 @@ examples:
     srcp = sub.add_parser("source", help="Get source code of an ABAP object")
     srcp.add_argument("name", help="Object name, e.g. ZCDS_VIEW")
     srcp.add_argument("--type", default="PROG/P", help="Object type (default: PROG/P)")
+
+    # packages-by-responsible
+    prp = sub.add_parser("packages-by-responsible", help="List packages by responsible user")
+    prp.add_argument("responsible", help="Responsible user, e.g. LEOS4")
+    prp.add_argument("--pattern", default="Z*", help="Package name pattern (default: Z*)")
+    prp.add_argument("--max", type=int, default=500, metavar="N", help="Max packages to scan (default: 500)")
 
     # transports
     tp = sub.add_parser("transports", help="List open transport requests")
@@ -204,6 +245,7 @@ def main():
         "search": cmd_search,
         "objects": cmd_objects,
         "packages": cmd_packages,
+        "packages-by-responsible": cmd_packages_by_responsible,
         "source": cmd_source,
         "transports": cmd_transports,
     }

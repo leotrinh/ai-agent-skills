@@ -21,6 +21,8 @@ Bridges capability gaps in `adt-mcp-server` by querying the SAP ADT REST API dir
 
 Run with: `~\.claude\skills\.venv\Scripts\python.exe ~/.claude/skills/adt-browse-search/scripts/adt-client.py`
 
+Or use the prebuilt binary: `~/.claude/skills/adt-browse-search/bin/adt-client.exe`
+
 ## Connection Params (required for all commands)
 
 | Param | Description | Example |
@@ -42,6 +44,7 @@ python adt-client.py --url <url> --user <u> --pwd <p> search "Z*" --type PROG/P 
 | `query` | Name pattern, e.g. `Z*`, `ZCL_*`, `*` |
 | `--type` | Object type: `PROG/P` `CLAS/OC` `INTF/OI` `DEVC/K` `TABL/DT` `FUGR/FF` |
 | `--package` | Filter by package name |
+| `--author` | Filter by author/responsible user |
 | `--max` | Max results (default: 100) |
 
 ### `objects` — List all objects in a package
@@ -56,6 +59,13 @@ python adt-client.py ... packages '$TMP'
 python adt-client.py ... packages ZROOT_PACKAGE
 ```
 
+### `packages-by-responsible` — List packages owned by a user
+```bash
+python adt-client.py ... packages-by-responsible LEOS4
+python adt-client.py ... packages-by-responsible LEOS4 --pattern "Z*" --max 500
+```
+Fetches each matching package's properties and filters by `adtcore:responsible`.
+
 ### `source` — Read source code of an ABAP object
 ```bash
 python adt-client.py ... source ZCDS_VIEW --type PROG/P
@@ -66,7 +76,7 @@ Supported types: `PROG/P` `CLAS/OC` `INTF/OI` `FUGR/FF`
 ### `transports` — List open transport requests
 ```bash
 python adt-client.py ... transports
-python adt-client.py ... transports --owner P07084
+python adt-client.py ... transports --owner DEVUSER
 ```
 
 ## Output
@@ -76,7 +86,7 @@ All commands return **JSON** — easy to parse, filter with `jq`, or pass to nex
 ```json
 [
   { "uri": "/sap/bc/adt/programs/programs/zcds_view", "type": "PROG/P",
-    "name": "ZCDS_VIEW", "package": "$P07084", "description": "Find CDS Views by Table Name" }
+    "name": "ZCDS_VIEW", "package": "$TMP", "description": "Find CDS Views by Table Name" }
 ]
 ```
 
@@ -84,7 +94,7 @@ All commands return **JSON** — easy to parse, filter with `jq`, or pass to nex
 
 When a user asks to browse, search, or inspect the SAP repository and `adt-mcp-server` tools don't cover it:
 
-1. Get connection details from `C:\DevSpace\SAP\ai-mcp\.claude\settings.json` or ask user
+1. Get connection details from the project's `.claude/settings.json` or ask the user
 2. Run the appropriate command via the venv Python interpreter
 3. Parse the JSON output and present results
 
@@ -96,5 +106,6 @@ When a user asks to browse, search, or inspect the SAP repository and `adt-mcp-s
 | Search by package | ❌ | ✅ `search --package` |
 | List all objects in a package | ❌ | ✅ `objects` |
 | Browse sub-packages | ❌ | ✅ `packages` |
+| List packages by responsible user | ❌ | ✅ `packages-by-responsible` |
 | Read source code | ❌ | ✅ `source` |
 | List transport requests | ❌ | ✅ `transports` |
