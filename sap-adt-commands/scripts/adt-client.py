@@ -32,7 +32,7 @@ TYPE_PATH_MAP = {
     "TRAN/T":  "vit/wb/object_type/tran",
     "DEVC/K":  "packages",
     "FUNC/FF": "functions/functionModules",
-    "DDLS/DF": "ddic/ddla/sources",
+    "DDLS/DF": "ddic/ddl/sources",
 }
 
 # Object-class suffix used in the text elements REST path
@@ -57,7 +57,12 @@ def make_session(url: str, user: str, pwd: str, client: str, lang: str) -> reque
     s = requests.Session()
     s.auth = HTTPBasicAuth(user, pwd)
     s.verify = False
-    s.headers.update({"sap-client": client, "sap-language": lang})
+    s.headers.update({
+        "sap-client": client,
+        "sap-language": lang,
+        # Locks only survive across requests in a stateful ADT session
+        "X-sap-adt-sessiontype": "stateful",
+    })
     resp = s.get(f"{url}/sap/bc/adt/discovery", headers={"X-CSRF-Token": "Fetch"})
     csrf = resp.headers.get("x-csrf-token", "")
     if csrf:
@@ -97,7 +102,12 @@ def _lock(s: requests.Session, base_url: str, corr_nr: str = "") -> tuple[str, s
         lock_url += f"&corrNumber={corr_nr}"
     resp = s.post(
         lock_url,
-        headers={"X-CSRF-Token": s.headers.get("X-CSRF-Token", "")},
+        headers={
+            "X-CSRF-Token": s.headers.get("X-CSRF-Token", ""),
+            # Strict endpoints (e.g. ddic/ddl/sources) return 406 without the
+            # lock-result media type; harmless for the lenient ones.
+            "Accept": "application/vnd.sap.as+xml;charset=UTF-8;dataname=com.sap.adt.lock.Result",
+        },
     )
     m = re.search(r'adtcore:lockHandle="([^"]*)"', resp.text)
     if not m:
