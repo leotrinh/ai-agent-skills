@@ -1728,7 +1728,7 @@ examples (use --url / --user / --pwd / --client for all):
 
     # create-package
     cpp = sub.add_parser("create-package", help="Create a new ABAP package (DEVC/K)")
-    cpp.add_argument("name", help="Package name, e.g. ZHABA_MDM")
+    cpp.add_argument("name", help="Package name, e.g. ZLEO_MDM")
     cpp.add_argument("--description", required=True, help="Short description")
     cpp.add_argument("--superpackage", required=True, help="Parent package name")
     cpp.add_argument("--transport", default="", help="Transport request number")
