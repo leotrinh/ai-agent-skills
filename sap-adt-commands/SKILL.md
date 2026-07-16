@@ -6,7 +6,7 @@ keywords: [SAP, ABAP, ADT, create, package, program, class, interface, function-
 argument-hint: "[command] [options]"
 metadata:
   author: Leo
-  version: "3.3.0"
+  version: "3.5.0"
 ---
 
 # SAP ADT Commands
@@ -24,26 +24,67 @@ Run with Python:
 ```powershell
 & "$env:USERPROFILE\.claude\skills\.venv\Scripts\python.exe" `
     "$env:USERPROFILE\.claude\skills\sap-adt-commands\scripts\adt-client.py" `
-    --url ... --user ... --pwd ... [command] [options]
+    --dest DEV_100_LEO_EN [command] [options]
 ```
 
 Or use the prebuilt binary (no Python needed):
 ```powershell
 & "$env:USERPROFILE\.claude\skills\sap-adt-commands\bin\adt-client.exe" `
-    --url ... --user ... --pwd ... [command] [options]
+    --dest DEV_100_LEO_EN [command] [options]
 ```
 
 > After editing `adt-client.py`, rebuild the binary — see **Rebuilding the Binary** at the bottom.
 
-## Connection Params (required for all commands)
+## Connection (required for all commands)
 
-| Param | Description | Example |
-|-------|-------------|---------|
-| `--url` | SAP system base URL | `https://host:44300` |
-| `--user` | SAP logon user | `DEVUSER` |
-| `--pwd` | SAP password | `****` |
-| `--client` | SAP client (default: `100`) | `100` |
-| `--lang` | Logon language (default: `EN`) | `EN` |
+**Preferred: `--dest SID_CLIENT_USER_LANG`** (e.g. `DEV_100_LEO_EN`) — no
+credential ever appears on the command line. Agents MUST use this form:
+permission classifiers block any command carrying a plaintext `--pwd`.
+
+`--dest DEV_100_LEO_EN` resolves to:
+
+| Value | Source (first hit wins) |
+|-------|------------------------|
+| url | `--url` flag → `SAP_DEV_URL` env var |
+| user | `--user` flag → `SAP_DEV_LEO_USER` env var → `LEO` (from the name) |
+| pwd | `--pwd` flag → `SAP_DEV_LEO_PWD` env var (**required**) |
+| client / lang | `--client`/`--lang` flags → `100` / `EN` (from the name) |
+
+One-time setup per system — **the human runs this, never the agent** (an agent
+typing the password is exactly what the classifier blocks):
+
+```powershell
+setx SAP_DEV_URL "https://host:44300"
+setx SAP_DEV_LEO_PWD "<password>"
+```
+
+Env vars are read from the process environment first, then from
+`HKCU\Environment` directly — so a fresh `setx` works without restarting the
+agent session.
+
+### If env vars are missing (first use of a destination)
+
+The client exits with a JSON error naming exactly what to set, e.g.:
+
+```json
+{"error": "Missing connection values for --dest DEV_100_LEO_EN",
+ "set_once_with": ["setx SAP_DEV_URL \"<value>\"", "setx SAP_DEV_LEO_PWD \"<value>\""]}
+```
+
+Agent playbook for this error — do NOT treat it as a connection failure:
+
+1. `SAP_<SID>_URL` is **not a secret** — the agent may run that `setx` itself
+   if the base URL is known.
+2. The `*_PWD` var **must be set by the human**: show them the `setx` command
+   verbatim (with `<password>` placeholder) and wait. Never ask the user to
+   paste the password into the chat, never run the password `setx` yourself.
+3. After the user confirms, **retry the original command as-is** — the registry
+   fallback picks the value up immediately; no restart, no re-login, nothing
+   else to do.
+
+Explicit flags (`--url`, `--user`, `--pwd`, `--client`, `--lang`) still work
+without `--dest` (backward compatible) and override resolved values when
+combined with it.
 
 > `--user` is also used as `adtcore:responsible` in object creation XML — no separate `--responsible` needed.
 
@@ -165,7 +206,9 @@ adt-client ... create-function-module Z_RFC_FUNC \
 | Arg | Description |
 |-----|-------------|
 | `--group` | Parent function group name (required) |
-| `--processing-type` | `normal` (default) / `remote-enabled` / `update` |
+| `--processing-type` | Informational only — ADT creation API cannot set it; returns a note to set it in SE37 afterwards |
+
+POSTs to `functions/groups/{group}/fmodules` (FMs are nested under their group).
 
 ### `create-function-group` — Create function group (FUGR/FF)
 ```bash
@@ -283,7 +326,8 @@ adt-client ... history ZMY_PROG --type PROG/P
 ```
 Returns versions with `changed_at`, `changed_by`. Field `"source"`:
 - `"versions_endpoint"` — full history from `/source/versions`
-- `"object_properties_fallback"` — latest change only (when versions endpoint is unavailable)
+- `"revision_atom_feed"` — full history from the object's versions atom link
+- `"object_properties_fallback"` — latest change only (when no versions source is available)
 
 ### `diff` — Compare active vs inactive (unsaved) version
 ```bash
@@ -297,24 +341,25 @@ adt-client ... transports
 adt-client ... transports --owner DEVUSER
 ```
 
-### `create-transport` — Create a new transport request
+### `create-transport` — Create a new Workbench transport request
 ```bash
-adt-client ... create-transport --description "DSI-1234: My feature" --target PRD
-adt-client ... create-transport --description "Customizing change" --type-tr W
+adt-client ... create-transport --description "TICKET-1234: My feature"
+adt-client ... create-transport --description "TICKET-1234: My feature" --package ZPKG
 ```
 | Arg | Description |
 |-----|-------------|
 | `--description` | Transport description (required) |
-| `--target` | Target system SID, e.g. `PRD` (optional) |
-| `--type-tr` | `K` = Workbench (default), `W` = Customizing |
+| `--package` | Package (DEVCLASS) — determines transport route (optional) |
+| `--target` | Deprecated — target system follows the package's transport layer |
+| `--type-tr` | `K` = Workbench (default). `W` (Customizing) is rejected — no ADT REST path; use SE01/SE09 |
 
-Returns `transport` number on success. Falls back to SE01/SE09 note if REST not enabled.
+POSTs the ABAP-serialized `CreateCorrectionRequest` structure to `/sap/bc/adt/cts/transports`. Returns `transport` number on success; SE01/SE09 note if CTS REST not enabled.
 
 ### `release-transport` — Release a transport request
 ```bash
 adt-client ... release-transport DEVK900001
 ```
-Two-step: releases all open tasks first, then releases the request. Returns `released: true/false` + per-task results.
+Two-step: releases all open tasks first, then the request — each via `POST /sap/bc/adt/cts/transportrequests/{nr}/newreleasejobs`. Returns `released: true/false` + per-task results.
 
 ### `move-object` — Record object into a target transport
 ```bash
@@ -342,7 +387,7 @@ adt-client ... create-cds ZCDS_MY_VIEW \
 adt-client ... create-cds ZCDS_MY_VIEW \
   --description "My CDS view" --package ZPKG --source-file my_view.ddls
 ```
-Uses ADT endpoint `/sap/bc/adt/ddic/ddla/sources` (DDLA = Data Definition Language Abstractions — category `ddlaadf`). After the object is created, optionally writes initial source from `--source` (inline) or `--source-file` (file path).
+Uses ADT endpoint `/sap/bc/adt/ddic/ddl/sources` (root `ddl:ddlSource`). Note: `ddic/ddla/sources` is a *different* object type (DDLA = annotation definitions) — do not use it for data definitions. After the object is created, optionally writes initial source from `--source` (inline) or `--source-file` (file path).
 
 | Arg | Description |
 |-----|-------------|
@@ -479,7 +524,7 @@ $exe = "$env:USERPROFILE\.claude\skills\sap-adt-commands\bin\adt-client.exe"
 ### 6. Transport management
 ```powershell
 & $exe @b transports --owner DEVUSER         # list open transports
-& $exe @b create-transport --description "DSI-1234: Feature X" --target PRD
+& $exe @b create-transport --description "TICKET-1234: Feature X" --package ZPKG
 & $exe @b move-object ZMY_PROG:PROG/P --transport DEVK900002
 & $exe @b transport-contents DEVK900001      # inspect objects inside
 & $exe @b release-transport DEVK900001       # release tasks then request
@@ -551,14 +596,16 @@ $exe = "$env:USERPROFILE\.claude\skills\sap-adt-commands\bin\adt-client.exe"
 | `atc-check` | Returns 406 on some S/4HANA Cloud systems — use SCI/SE38 instead |
 | `abap-unit` | Schema varies by SAP release; returns 400 on some versions |
 | `transports` / `transport-contents` | Requires CTS REST (`/sap/bc/adt/cts/workbench`) — returns 404 when not enabled |
-| `inactive-objects` | Returns 404 on some systems when the workarea endpoint is not deployed |
-| `where-used` | Returns 500 on some systems when the usages service is not enabled |
+| `inactive-objects` | `GET /sap/bc/adt/activation/inactiveobjects`; falls back to `workarea/inactive` on 404 |
+| `where-used` | `POST /sap/bc/adt/repository/informationsystem/usageReferences?uri=…` with usageReferenceRequest body |
 | `search --author` | ADT quickSearch ignores the `author` param — use `objects-by-user` as the correct proxy |
 | `write-source` | Blocked on systems where `MODIFICATION_SUPPORT=false` (locked/delivery systems) |
 | `activate` | Returns 403 when the object is locked by an open editor session — close it first |
 | `read-message-class` | Path and accepted Content-Type vary by SAP release; skill auto-probes both variants |
 | `add-message` / `update-message` / `delete-message` | Read XML → patch in-memory → PUT full XML back — activate separately |
-| `create-cds` | Uses DDLA endpoint (`ddic/ddla/sources`, category `ddlaadf`), not the DDL endpoint |
+| `create-cds` | Uses the DDL endpoint (`ddic/ddl/sources`, root `ddl:ddlSource`) — DDLA is annotation definitions, a different object type |
+| `create-function-module` | Nested endpoint `functions/groups/{group}/fmodules` with `adtcore:containerRef` |
+| creation transport param | Query param is `corrNr` on all creation POSTs and DELETE |
 | `read-text-elements` | `Accept: */*` required — specific Content-Type returns 406 on some releases |
 | `write-text-elements` | Locks the textelements object; falls back to the program object lock if that fails |
 

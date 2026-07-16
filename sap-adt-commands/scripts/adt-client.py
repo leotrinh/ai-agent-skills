@@ -9,6 +9,7 @@ Supports: search, list objects/packages, read/write source, transports,
 import argparse
 import difflib
 import json
+import os
 import re
 import sys
 import time
@@ -50,11 +51,72 @@ TEXT_ELEM_SECTIONS = {
 }
 
 
+# ── Destination-based credential resolution ──────────────────────────────────
+
+def _env_or_registry(name: str) -> str | None:
+    """User env var, falling back to HKCU\\Environment — `setx` values never
+    reach an already-running parent process, only the registry sees them."""
+    val = os.environ.get(name)
+    if val:
+        return val
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as key:
+            return winreg.QueryValueEx(key, name)[0]
+    except (ImportError, OSError):
+        return None
+
+
+def _resolve_destination(args) -> None:
+    """Fill url/user/pwd/client/lang from a destination name like DEV_100_LEO_EN.
+
+    Resolution order (explicit flags always win):
+      url     SAP_<SID>_URL
+      user    SAP_<SID>_<USER>_USER, else the <USER> part of the destination
+      pwd     SAP_<SID>_<USER>_PWD   (must exist — never passed on the CLI)
+      client / lang  from the destination name
+
+    Set the secrets once per system, in a shell the agent does not run:
+      setx SAP_DEV_URL "https://host:44300"
+      setx SAP_DEV_LEO_PWD "<password>"
+    """
+    parts = args.dest.split("_")
+    if len(parts) != 4:
+        raise SystemExit(json.dumps({
+            "error": f"--dest must look like SID_CLIENT_USER_LANG "
+                     f"(e.g. DEV_100_LEO_EN), got: {args.dest}"}))
+    sid, client, user, lang = (x.upper() for x in parts)
+    if not args.url:
+        args.url = _env_or_registry(f"SAP_{sid}_URL")
+    if not args.user:
+        args.user = _env_or_registry(f"SAP_{sid}_{user}_USER") or user
+    if not args.pwd:
+        args.pwd = _env_or_registry(f"SAP_{sid}_{user}_PWD")
+    if not args.client:
+        args.client = client
+    if not args.lang:
+        args.lang = lang
+    missing = ([f"SAP_{sid}_URL"] if not args.url else []) \
+        + ([f"SAP_{sid}_{user}_PWD"] if not args.pwd else [])
+    if missing:
+        raise SystemExit(json.dumps({
+            "error": f"Missing connection values for --dest {args.dest}",
+            "set_once_with": [f'setx {m} "<value>"' for m in missing]}))
+
+
 # ── Session ──────────────────────────────────────────────────────────────────
+
+class _AdtSession(requests.Session):
+    """Session with a default timeout so a hung SAP system can't hang the CLI."""
+
+    def request(self, *pargs, **kwargs):
+        kwargs.setdefault("timeout", 120)
+        return super().request(*pargs, **kwargs)
+
 
 def make_session(url: str, user: str, pwd: str, client: str, lang: str) -> requests.Session:
     """Build authenticated session with CSRF token."""
-    s = requests.Session()
+    s = _AdtSession()
     s.auth = HTTPBasicAuth(user, pwd)
     s.verify = False
     s.headers.update({
@@ -64,6 +126,12 @@ def make_session(url: str, user: str, pwd: str, client: str, lang: str) -> reque
         "X-sap-adt-sessiontype": "stateful",
     })
     resp = s.get(f"{url}/sap/bc/adt/discovery", headers={"X-CSRF-Token": "Fetch"})
+    if resp.status_code in (401, 403):
+        print(json.dumps({
+            "error": f"Authentication failed (HTTP {resp.status_code})",
+            "hint": "Check --user / --pwd / --client",
+        }))
+        sys.exit(1)
     csrf = resp.headers.get("x-csrf-token", "")
     if csrf:
         s.headers["X-CSRF-Token"] = csrf
@@ -106,7 +174,7 @@ def _lock(s: requests.Session, base_url: str, corr_nr: str = "") -> tuple[str, s
             "X-CSRF-Token": s.headers.get("X-CSRF-Token", ""),
             # Strict endpoints (e.g. ddic/ddl/sources) return 406 without the
             # lock-result media type; harmless for the lenient ones.
-            "Accept": "application/vnd.sap.as+xml;charset=UTF-8;dataname=com.sap.adt.lock.Result",
+            "Accept": "application/*,application/vnd.sap.as+xml;charset=UTF-8;dataname=com.sap.adt.lock.Result",
         },
     )
     m = re.search(r'adtcore:lockHandle="([^"]*)"', resp.text)
@@ -125,8 +193,12 @@ def _lock(s: requests.Session, base_url: str, corr_nr: str = "") -> tuple[str, s
 
 
 def _unlock(s: requests.Session, base_url: str, handle: str) -> None:
-    """Release an ADT object lock."""
-    s.post(f"{base_url}?_action=UNLOCK&lockHandle={urllib.parse.quote(handle)}")
+    """Release an ADT object lock (best-effort — must never mask the real error;
+    an unreleased lock dies with the stateful session anyway)."""
+    try:
+        s.post(f"{base_url}?_action=UNLOCK&lockHandle={urllib.parse.quote(handle)}")
+    except requests.exceptions.RequestException:
+        pass
 
 
 # ── ATC XML builders ──────────────────────────────────────────────────────────
@@ -170,7 +242,7 @@ def _post_adt(s: requests.Session, url: str, path: str, body: str,
     """POST to an ADT endpoint and return a status dict."""
     params = {}
     if transport:
-        params["corrNumber"] = transport
+        params["corrNr"] = transport
     resp = s.post(
         f"{url}/sap/bc/adt/{path}",
         data=body.encode("utf-8"),
@@ -271,7 +343,7 @@ def cmd_create_transaction(s: requests.Session, url: str, args) -> dict:
 
 def _msgclass_base(s: requests.Session, url: str, name: str) -> str:
     """Return the correct message class base URL (path varies by SAP release)."""
-    # SD2 / S4HC: /sap/bc/adt/messageclass/{name}  (singular, lowercase)
+    # S/4 on-prem: /sap/bc/adt/messageclass/{name}  (singular, lowercase)
     # Older:      /sap/bc/adt/messageClasses/{name} (plural, camelCase)
     for path in (f"messageclass/{name.lower()}", f"messageClasses/{name.lower()}"):
         r = s.get(f"{url}/sap/bc/adt/{path}", headers={"Accept": "*/*"})
@@ -289,6 +361,10 @@ def cmd_read_message_class(s: requests.Session, url: str, args) -> dict:
 
 def cmd_write_messages(s: requests.Session, url: str, args) -> dict:
     """Write all messages to an existing message class (lock→PUT→unlock)."""
+    # Read input before locking — a missing file must not leave a stuck lock
+    with open(args.file, encoding="utf-8") as f:
+        xml_body = f.read()
+
     base = _msgclass_base(s, url, args.name)
 
     # Lock
@@ -305,18 +381,17 @@ def cmd_write_messages(s: requests.Session, url: str, args) -> dict:
     if not handle:
         return {"error": "Could not lock message class — may be locked or not found"}
 
-    with open(args.file, encoding="utf-8") as f:
-        xml_body = f.read()
-
-    put_resp = s.put(
-        base,
-        data=xml_body.encode("utf-8"),
-        headers={
-            "Content-Type": "application/vnd.sap.adt.messageClasses+xml",
-            "X-sap-adt-lockhandle": handle,
-        },
-    )
-    _unlock(s, base, handle)
+    try:
+        put_resp = s.put(
+            base,
+            data=xml_body.encode("utf-8"),
+            headers={
+                "Content-Type": "application/vnd.sap.adt.messageClasses+xml",
+                "X-sap-adt-lockhandle": handle,
+            },
+        )
+    finally:
+        _unlock(s, base, handle)
 
     ok = put_resp.status_code in (200, 204)
     return {
@@ -340,15 +415,17 @@ def _msgclass_lock_put_xml(s: requests.Session, base: str, xml_text: str, transp
     handle, _ = _lock(s, base, corr_nr=transport or "")
     if not handle:
         return {"ok": False, "error": "Could not lock message class — may be locked or not found"}
-    put_resp = s.put(
-        base,
-        data=xml_text.encode("utf-8"),
-        headers={
-            "Content-Type": "application/vnd.sap.adt.messageClasses+xml",
-            "X-sap-adt-lockhandle": handle,
-        },
-    )
-    _unlock(s, base, handle)
+    try:
+        put_resp = s.put(
+            base,
+            data=xml_text.encode("utf-8"),
+            headers={
+                "Content-Type": "application/vnd.sap.adt.messageClasses+xml",
+                "X-sap-adt-lockhandle": handle,
+            },
+        )
+    finally:
+        _unlock(s, base, handle)
     ok = put_resp.status_code in (200, 204)
     return {
         "ok": ok,
@@ -369,7 +446,7 @@ def cmd_add_message(s: requests.Session, url: str, args) -> dict:
     new_elem = f'<mc:message mc:id="{msg_id}" mc:selfExplanatory="true" adtcore:description="{text}" adtcore:descriptionTextLimit="73"/>'
 
     # Match existing message element with this id (self-closing, single line)
-    pattern = rf'<mc:message[^>]*mc:id="{re.escape(msg_id)}"[^/]*/>'
+    pattern = rf'<mc:message[^>]*mc:id="{re.escape(msg_id)}"[^>]*/>'
     if re.search(pattern, xml):
         xml = re.sub(pattern, new_elem, xml)
         action = "updated"
@@ -391,7 +468,7 @@ def cmd_delete_message(s: requests.Session, url: str, args) -> dict:
         return {"error": f"Could not read message class {args.name}"}
 
     msg_id = str(args.id).zfill(3)
-    pattern = rf'\s*<mc:message[^>]*mc:id="{re.escape(msg_id)}"[^/]*/>'
+    pattern = rf'\s*<mc:message[^>]*mc:id="{re.escape(msg_id)}"[^>]*/>'
     if not re.search(pattern, xml):
         return {"error": f"Message {msg_id} not found in {args.name}"}
 
@@ -547,13 +624,6 @@ def cmd_write_source(s: requests.Session, url: str, args) -> dict:
     base_path = TYPE_PATH_MAP.get(args.type, "programs/programs")
     base = f"{url}/sap/bc/adt/{base_path}/{args.name.lower()}"
 
-    transport = getattr(args, "transport", "") or ""
-    handle, corr_nr = _lock(s, base, corr_nr=transport)
-    if not handle:
-        return {"error": "Could not obtain lock — object may be locked by another user"}
-    # Prefer the caller-supplied transport; fall back to whatever the lock assigned
-    effective_corr = transport or corr_nr
-
     if args.text:
         source = args.text
     elif args.file:
@@ -562,18 +632,27 @@ def cmd_write_source(s: requests.Session, url: str, args) -> dict:
     else:
         return {"error": "Provide --file or --text"}
 
+    transport = getattr(args, "transport", "") or ""
+    handle, corr_nr = _lock(s, base, corr_nr=transport)
+    if not handle:
+        return {"error": "Could not obtain lock — object may be locked by another user"}
+    # Prefer the caller-supplied transport; fall back to whatever the lock assigned
+    effective_corr = transport or corr_nr
+
     qs = f"lockHandle={urllib.parse.quote(handle, safe='')}"
     if effective_corr:
         qs += f"&corrNr={effective_corr}"
-    put_resp = s.put(
-        f"{base}/source/main?{qs}",
-        data=source.encode("utf-8"),
-        headers={
-            "Content-Type": "text/plain; charset=utf-8",
-            "X-sap-adt-lockhandle": handle,
-        },
-    )
-    _unlock(s, base, handle)
+    try:
+        put_resp = s.put(
+            f"{base}/source/main?{qs}",
+            data=source.encode("utf-8"),
+            headers={
+                "Content-Type": "text/plain; charset=utf-8",
+                "X-sap-adt-lockhandle": handle,
+            },
+        )
+    finally:
+        _unlock(s, base, handle)
 
     ok = put_resp.status_code in (200, 204)
     return {
@@ -735,7 +814,7 @@ def cmd_transport_contents(s: requests.Session, url: str, args) -> dict:
     xml = r.text
 
     # Find block for our transport
-    # Format: <tm:transportRequest tm:number="SD2K916962" ...> ... </tm:transportRequest>
+    # Format: <tm:transportRequest tm:number="DEVK900123" ...> ... </tm:transportRequest>
     block_match = re.search(
         rf'<tm:transportRequest[^>]*tm:number="{re.escape(transport)}"[^>]*>.*?</tm:transportRequest>',
         xml,
@@ -793,9 +872,13 @@ def cmd_delete(s: requests.Session, url: str, args) -> dict:
 
     params = {"lockHandle": handle}
     if args.transport:
-        params["transportRequest"] = args.transport
+        params["corrNr"] = args.transport
 
-    del_resp = s.delete(base, params=params, headers={"X-sap-adt-lockhandle": handle})
+    try:
+        del_resp = s.delete(base, params=params, headers={"X-sap-adt-lockhandle": handle})
+    except requests.exceptions.RequestException:
+        _unlock(s, base, handle)
+        raise
 
     if del_resp.status_code not in (200, 204):
         _unlock(s, base, handle)
@@ -808,24 +891,41 @@ def cmd_delete(s: requests.Session, url: str, args) -> dict:
     return {"name": args.name, "type": args.type, "delete_status": del_resp.status_code, "message": "Deleted"}
 
 
+def _parse_adt_object_tags(xml: str) -> list[dict]:
+    """Extract adtcore-attributed elements regardless of attribute order."""
+    result = []
+    for tag in re.findall(r'<[^>]*adtcore:name="[^"]*"[^>]*>', xml):
+        def _attr(a):
+            m = re.search(rf'adtcore:{a}="([^"]*)"', tag)
+            return m.group(1) if m else ""
+        entry = {
+            "uri": _attr("uri"),
+            "type": _attr("type"),
+            "name": _attr("name"),
+            "package": _attr("packageName"),
+            "description": _attr("description"),
+        }
+        if entry["name"] and entry["uri"]:
+            result.append(entry)
+    return result
+
+
 def cmd_where_used(s: requests.Session, url: str, args) -> dict:
-    """Find all objects that reference a given ABAP object."""
+    """Find all objects that reference a given ABAP object (usage references)."""
     base_path = TYPE_PATH_MAP.get(args.type, "programs/programs")
     obj_uri = f"/sap/bc/adt/{base_path}/{args.name.lower()}"
 
-    resp = s.get(
-        f"{url}/sap/bc/adt/repository/informationsystem/usages",
-        params={"uri": obj_uri, "maxResults": args.max},
-        headers={"Accept": "application/xml"},
+    body = ('<?xml version="1.0" encoding="ASCII"?>\n'
+            '<usagereferences:usageReferenceRequest '
+            'xmlns:usagereferences="http://www.sap.com/adt/ris/usageReferences">\n'
+            '  <usagereferences:affectedObjects/>\n'
+            '</usagereferences:usageReferenceRequest>')
+    resp = s.post(
+        f"{url}/sap/bc/adt/repository/informationsystem/usageReferences",
+        params={"uri": obj_uri},
+        data=body.encode("utf-8"),
+        headers={"Content-Type": "application/*", "Accept": "application/*"},
     )
-
-    if resp.status_code == 404:
-        # Fallback: search with usages operation
-        resp = s.get(
-            f"{url}/sap/bc/adt/repository/informationsystem/search",
-            params={"operation": "usages", "uri": obj_uri, "maxResults": args.max},
-            headers={"Accept": "application/xml"},
-        )
 
     if resp.status_code not in (200, 201):
         return {
@@ -834,13 +934,20 @@ def cmd_where_used(s: requests.Session, url: str, args) -> dict:
             "raw_xml_preview": resp.text[:300],
         }
 
-    usages = parse_xml_refs(resp.text)
-    return {
+    usages = _parse_adt_object_tags(resp.text)
+    # The queried object itself is returned as well — drop it
+    usages = [u for u in usages if u["uri"].rstrip("/").split("#")[0] != obj_uri][: args.max]
+    result = {
         "target": args.name,
         "target_type": args.type,
         "usages_count": len(usages),
         "usages": usages,
     }
+    if not usages:
+        # Response schema varies by release — keep raw preview so an empty
+        # result can be told apart from a parse miss
+        result["raw_xml_preview"] = resp.text[:500]
+    return result
 
 
 def cmd_history(s: requests.Session, url: str, args) -> dict:
@@ -866,8 +973,35 @@ def cmd_history(s: requests.Session, url: str, args) -> dict:
                 ],
             }
 
-    # Approach B: object properties fallback (latest change only)
+    # Approach B: revision link from object metadata → atom feed
     resp2 = s.get(base)
+    link_m = re.search(
+        r'<atom:link[^>]*href="([^"]+)"[^>]*rel="http://www\.sap\.com/adt/relations/versions"[^>]*/?>'
+        r'|<atom:link[^>]*rel="http://www\.sap\.com/adt/relations/versions"[^>]*href="([^"]+)"',
+        resp2.text,
+    )
+    if link_m:
+        href = link_m.group(1) or link_m.group(2)
+        rev_url = href if href.startswith("http") else (
+            f"{url}{href}" if href.startswith("/") else f"{base}/{href}")
+        r_feed = s.get(rev_url, headers={"Accept": "application/atom+xml;type=feed"})
+        if r_feed.status_code == 200:
+            entries = re.findall(r'<(?:atom:)?entry>(.*?)</(?:atom:)?entry>', r_feed.text, re.DOTALL)
+            versions = []
+            for e in entries:
+                def _f(pat):
+                    m = re.search(pat, e)
+                    return m.group(1) if m else ""
+                versions.append({
+                    "version": _f(r'<title[^>]*>([^<]*)</title>'),
+                    "changed_at": _f(r'<updated>([^<]*)</updated>'),
+                    "changed_by": _f(r'<name>([^<]*)</name>'),
+                })
+            if versions:
+                return {"name": args.name, "type": args.type,
+                        "source": "revision_atom_feed", "versions": versions}
+
+    # Approach C: object properties fallback (latest change only)
     def _ex(pattern, text):
         m = re.search(pattern, text)
         return m.group(1) if m else ""
@@ -921,54 +1055,53 @@ def cmd_diff(s: requests.Session, url: str, args) -> dict:
 
 
 def cmd_create_transport(s: requests.Session, url: str, args) -> dict:
-    """Create a new Workbench or Customizing transport request."""
-    category = "Workbench" if getattr(args, "type_tr", "K") == "K" else "Customizing"
-    target = getattr(args, "target", "") or ""
+    """Create a new Workbench transport request via /sap/bc/adt/cts/transports.
 
-    # Try two XML formats — SAP systems vary on accepted schema
-    xml_v1 = f"""<?xml version="1.0" encoding="UTF-8"?>
-<tm:root xmlns:tm="http://www.sap.com/cts/adt/tm"
-         tm:category="{category}"
-         tm:targetSys="{target}"
-         tm:description="{args.description}">
-</tm:root>"""
+    Body is the ABAP-serialized CreateCorrectionRequest structure; the target
+    system/route is derived by SAP from the package's transport layer.
+    """
+    if getattr(args, "type_tr", "K") == "W":
+        return {"error": "Customizing requests (W) are not supported via the ADT REST "
+                         "endpoint — create them in SE01/SE09"}
+    desc = (args.description.replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;"))
+    devclass = getattr(args, "package", "") or ""
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+    <DATA>
+      <OPERATION>I</OPERATION>
+      <DEVCLASS>{devclass.upper()}</DEVCLASS>
+      <REQUEST_TEXT>{desc}</REQUEST_TEXT>
+      <REF/>
+    </DATA>
+  </asx:values>
+</asx:abap>"""
 
-    xml_v2 = f"""<?xml version="1.0" encoding="UTF-8"?>
-<tm:request xmlns:tm="http://www.sap.com/cts/adt/tm"
-            tm:category="{category}"
-            tm:targetSystem="{target}"
-            tm:type="{getattr(args, 'type_tr', 'K')}">
-  <tm:description>{args.description}</tm:description>
-</tm:request>"""
-
-    for xml, ct in [
-        (xml_v1, "application/vnd.sap.adt.cts.transportrequests.request+xml"),
-        (xml_v2, "application/vnd.sap.adt.cts.transportrequests.request+xml"),
-        (xml_v1, "application/xml"),
-    ]:
-        r = s.post(
-            f"{url}/sap/bc/adt/cts/transportrequests",
-            data=xml.encode("utf-8"),
-            headers={"Content-Type": ct, "Accept": "application/xml"},
-        )
-        if r.status_code in (200, 201):
-            loc = r.headers.get("Location", "")
-            number = loc.rstrip("/").split("/")[-1] if loc else ""
-            m = re.search(r'tm:number="([^"]+)"', r.text)
-            if m:
-                number = m.group(1)
-            return {
-                "status": r.status_code,
-                "transport": number,
-                "location": loc,
-                "message": f"Transport {number} created",
-            }
+    r = s.post(
+        f"{url}/sap/bc/adt/cts/transports",
+        data=xml.encode("utf-8"),
+        headers={
+            "Content-Type": "application/vnd.sap.as+xml; charset=UTF-8; dataname=com.sap.adt.CreateCorrectionRequest",
+            "Accept": "text/plain",
+        },
+    )
+    if r.status_code in (200, 201):
+        # Response body/Location carries the new number, e.g. .../DEVK900124
+        m = re.search(r'([A-Z0-9]{3}K[0-9]{6,})', r.text + r.headers.get("Location", ""))
+        number = m.group(1) if m else r.text.strip()[:20]
+        result = {"status": r.status_code, "transport": number,
+                  "message": f"Transport {number} created"}
+        if getattr(args, "target", ""):
+            result["note"] = ("--target is not supported by this endpoint — the target "
+                              "system follows the package's transport layer/route")
+        return result
 
     return {
         "error": "Transport creation failed",
         "status": r.status_code,
         "body": r.text[:500],
-        "note": "Try creating via SE01/SE09 if REST is not enabled on this system",
+        "note": "Try creating via SE01/SE09 if CTS REST is not enabled on this system",
     }
 
 
@@ -987,40 +1120,29 @@ def cmd_release_transport(s: requests.Session, url: str, args) -> dict:
     released_tasks = []
     task_errors = []
     for task in tasks:
-        task_url = f"{url}/sap/bc/adt/cts/transportrequests/{task}"
         r_task = s.post(
-            f"{task_url}?action=release",
-            headers={"Accept": "application/xml"},
+            f"{url}/sap/bc/adt/cts/transportrequests/{task}/newreleasejobs",
+            headers={"Accept": "application/*"},
         )
-        if r_task.status_code in (200, 204):
+        if r_task.status_code in (200, 201, 204):
             released_tasks.append(task)
         else:
-            # Also try PUT
-            r_task2 = s.put(
-                task_url,
-                params={"action": "release"},
-                headers={"Accept": "application/xml"},
-            )
-            if r_task2.status_code in (200, 204):
-                released_tasks.append(task)
-            else:
-                task_errors.append({"task": task, "status": r_task.status_code, "body": r_task.text[:200]})
+            task_errors.append({"task": task, "status": r_task.status_code, "body": r_task.text[:200]})
 
     # Step 2: release the transport itself
-    r_rel = s.post(f"{tr_base}?action=release", headers={"Accept": "application/xml"})
-    if r_rel.status_code not in (200, 204):
-        r_rel = s.put(tr_base, params={"action": "release"}, headers={"Accept": "application/xml"})
+    r_rel = s.post(f"{tr_base}/newreleasejobs", headers={"Accept": "application/*"})
 
+    released = r_rel.status_code in (200, 201, 204)
     return {
         "transport": tr,
         "tasks_found": tasks,
         "tasks_released": released_tasks,
         "task_errors": task_errors,
         "release_status": r_rel.status_code,
-        "released": r_rel.status_code in (200, 204),
-        "message": ("Released" if r_rel.status_code in (200, 204)
+        "released": released,
+        "message": ("Released" if released
                     else f"Release failed ({r_rel.status_code}) — try SE01/SE10 if REST release is not enabled"),
-        "body": "" if r_rel.status_code in (200, 204) else r_rel.text[:400],
+        "body": "" if released else r_rel.text[:400],
     }
 
 
@@ -1092,29 +1214,30 @@ def cmd_move_object(s: requests.Session, url: str, args) -> dict:
 
 
 def cmd_create_function_module(s: requests.Session, url: str, args) -> dict:
-    """Create a new function module (FUNC/FF) inside an existing function group."""
-    processing_type = getattr(args, "processing_type", "normal") or "normal"
+    """Create a new function module (FUGR/FF) inside an existing function group.
+
+    Function modules live under their group: POST functions/groups/{group}/fmodules
+    with a containerRef to the group (not packageRef).
+    """
+    group = args.group.upper()
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<fm:functionModule
-  xmlns:fm="http://www.sap.com/adt/functions/fm"
+<fmodule:abapFunctionModule
+  xmlns:fmodule="http://www.sap.com/adt/functions/fmodules"
   xmlns:adtcore="http://www.sap.com/adt/core"
   adtcore:name="{args.name.upper()}"
   adtcore:description="{args.description}"
   adtcore:responsible="{args.user}"
-  adtcore:masterLanguage="EN"
-  fm:processingType="{processing_type}">
-  <adtcore:packageRef adtcore:name="{args.package.upper()}"/>
-  <fm:groupRef adtcore:name="{args.group.upper()}"/>
-</fm:functionModule>"""
+  adtcore:masterLanguage="EN">
+  <adtcore:containerRef adtcore:name="{group}" adtcore:type="FUGR/F"
+    adtcore:uri="/sap/bc/adt/functions/groups/{group.lower()}"/>
+</fmodule:abapFunctionModule>"""
 
-    r = _post_adt(s, url, "functions/functionModules",
-                  xml, "application/vnd.sap.adt.functions.fm.v2+xml",
-                  args.transport)
-    if not r["ok"]:
-        # Try v1 content type
-        r = _post_adt(s, url, "functions/functionModules",
-                      xml, "application/vnd.sap.adt.functions.fm+xml",
-                      args.transport)
+    r = _post_adt(s, url, f"functions/groups/{group.lower()}/fmodules",
+                  xml, "application/*", args.transport)
+    processing_type = getattr(args, "processing_type", "normal") or "normal"
+    if r["ok"] and processing_type != "normal":
+        r["note"] = ("Processing type cannot be set via the ADT creation API — "
+                     f"set '{processing_type}' afterwards in SE37/Eclipse (FM attributes)")
     return r
 
 
@@ -1261,17 +1384,17 @@ def cmd_inactive_objects(s: requests.Session, url: str, args) -> dict:
     if user:
         params["user"] = user.upper()
 
-    # Primary endpoint: ADT worklist of inactive objects
+    # Primary endpoint: ADT inactive CTS objects list
     r = s.get(
-        f"{url}/sap/bc/adt/workarea/inactive",
+        f"{url}/sap/bc/adt/activation/inactiveobjects",
         params=params,
-        headers={"Accept": "application/vnd.sap.adt.abapinactiveobjec.v1+xml, application/xml"},
+        headers={"Accept": "application/vnd.sap.adt.inactivectsobjects.v1+xml, application/xml;q=0.8"},
     )
 
     if r.status_code == 404:
-        # Fallback: check via object references endpoint
+        # Fallback for older releases
         r = s.get(
-            f"{url}/sap/bc/adt/activation/abapobjects/inactive",
+            f"{url}/sap/bc/adt/workarea/inactive",
             params=params,
             headers={"Accept": "application/xml"},
         )
@@ -1330,17 +1453,28 @@ def cmd_abap_unit(s: requests.Session, url: str, args) -> dict:
         for n, t in [item.rsplit(":", 1) if ":" in item else (item, "PROG/P")]
     )
 
+    # Root must be runConfiguration (an <aunit:run> root is rejected with 400),
+    # and without <options><uriType value="semantic"/> the run silently
+    # matches zero test classes.
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<aunit:run xmlns:aunit="http://www.sap.com/adt/aunit">
-  <aunit:runConfiguration>
-    <aunit:testDetermination ownTests="true" foreignTests="false"/>
-    <aunit:testRiskLevel harmless="true" dangerous="false" critical="false"/>
-    <aunit:testDuration short="true" medium="true" long="false"/>
-  </aunit:runConfiguration>
-  <adtcore:objectReferences xmlns:adtcore="http://www.sap.com/adt/core">
+<aunit:runConfiguration xmlns:aunit="http://www.sap.com/adt/aunit">
+  <external>
+    <coverage active="false"/>
+  </external>
+  <options>
+    <uriType value="semantic"/>
+    <testDeterminationStrategy sameProgram="true" assignedTests="false"/>
+    <testRiskLevels harmless="true" dangerous="true" critical="true"/>
+    <testDurations short="true" medium="true" long="true"/>
+  </options>
+  <adtcore:objectSets xmlns:adtcore="http://www.sap.com/adt/core">
+    <objectSet kind="inclusive">
+      <adtcore:objectReferences>
 {refs}
-  </adtcore:objectReferences>
-</aunit:run>"""
+      </adtcore:objectReferences>
+    </objectSet>
+  </adtcore:objectSets>
+</aunit:runConfiguration>"""
 
     r = s.post(
         f"{url}/sap/bc/adt/abapunit/testruns",
@@ -1355,15 +1489,18 @@ def cmd_abap_unit(s: requests.Session, url: str, args) -> dict:
         return {"error": "ABAP unit run failed", "status": r.status_code, "body": r.text[:500]}
 
     xml_res = r.text
-    methods = re.findall(r'<testMethod\s+[^/]*/>', xml_res)
+    # A failing testMethod is NOT self-closing (it nests <alerts>), and some
+    # releases omit executionState entirely — self-closing then means passed.
+    methods = list(re.finditer(r'<testMethod\b([^>]*?)(/?)>', xml_res))
     passed = failed = skipped = 0
     method_list = []
     for tm in methods:
-        n  = re.search(r'adtcore:name="([^"]+)"', tm)
-        st = re.search(r'executionState="([^"]+)"', tm)
+        attrs, self_closing = tm.group(1), tm.group(2) == "/"
+        n  = re.search(r'adtcore:name="([^"]+)"', attrs)
+        st = re.search(r'executionState="([^"]+)"', attrs)
         name  = n.group(1) if n else "?"
-        state = st.group(1) if st else "?"
-        is_pass = state in ("executed", "passed")
+        state = st.group(1) if st else ("passed" if self_closing else "failed")
+        is_pass = self_closing and state in ("executed", "passed")
         if is_pass:   passed  += 1
         elif state == "skipped": skipped += 1
         else: failed += 1
@@ -1412,34 +1549,24 @@ def cmd_discovery(s: requests.Session, url: str, args) -> dict:
 
 
 def cmd_create_cds(s: requests.Session, url: str, args) -> dict:
-    """Create a CDS Data Definition (DDLS/DF) via ADT DDLA REST endpoint.
+    """Create a CDS Data Definition (DDLS/DF) via /sap/bc/adt/ddic/ddl/sources.
 
-    Uses /sap/bc/adt/ddic/ddla/sources (DDLA = Data Definition Language Abstractions).
+    Note: ddic/ddla/sources is a different object type (DDLA = annotation
+    definitions) — data definitions must go to the DDL endpoint.
     Optionally writes initial source code immediately after creation.
     """
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<ddla:source
-  xmlns:ddla="http://www.sap.com/adt/ddic/ddla"
+<ddl:ddlSource
+  xmlns:ddl="http://www.sap.com/adt/ddic/ddlsources"
   xmlns:adtcore="http://www.sap.com/adt/core"
   adtcore:name="{args.name.upper()}"
   adtcore:description="{args.description}"
   adtcore:responsible="{args.user}"
   adtcore:masterLanguage="EN">
   <adtcore:packageRef adtcore:name="{args.package.upper()}"/>
-</ddla:source>"""
+</ddl:ddlSource>"""
 
-    r = _post_adt(s, url, "ddic/ddla/sources",
-                  xml, "application/vnd.sap.adt.ddic.ddla.v1+xml",
-                  args.transport)
-    if not r["ok"]:
-        # Fallback: add category abbreviation attribute (required on some releases)
-        xml2 = xml.replace(
-            'adtcore:masterLanguage="EN">',
-            'adtcore:masterLanguage="EN"\n  adtcore:categoryAbbreviation="ddlaadf">',
-        )
-        r = _post_adt(s, url, "ddic/ddla/sources",
-                      xml2, "application/vnd.sap.adt.ddic.ddla.v1+xml",
-                      args.transport)
+    r = _post_adt(s, url, "ddic/ddl/sources", xml, "application/*", args.transport)
 
     # Optionally write initial source right after creation
     source_text = ""
@@ -1450,20 +1577,25 @@ def cmd_create_cds(s: requests.Session, url: str, args) -> dict:
             source_text = f.read()
 
     if r["ok"] and source_text:
-        base = f"{url}/sap/bc/adt/ddic/ddla/sources/{args.name.lower()}"
+        base = f"{url}/sap/bc/adt/ddic/ddl/sources/{args.name.lower()}"
         handle, corr = _lock(s, base, corr_nr=getattr(args, "transport", "") or "")
+        if not handle:
+            r["source_written"] = False
+            r["source_error"] = "Could not lock the new DDLS object to write initial source"
         if handle:
             transport = getattr(args, "transport", "") or corr
             qs = f"lockHandle={urllib.parse.quote(handle, safe='')}"
             if transport:
                 qs += f"&corrNr={transport}"
-            put_r = s.put(
-                f"{base}/source/main?{qs}",
-                data=source_text.encode("utf-8"),
-                headers={"Content-Type": "text/plain; charset=utf-8",
-                         "X-sap-adt-lockhandle": handle},
-            )
-            _unlock(s, base, handle)
+            try:
+                put_r = s.put(
+                    f"{base}/source/main?{qs}",
+                    data=source_text.encode("utf-8"),
+                    headers={"Content-Type": "text/plain; charset=utf-8",
+                             "X-sap-adt-lockhandle": handle},
+                )
+            finally:
+                _unlock(s, base, handle)
             r["source_written"] = put_r.status_code in (200, 204)
             r["source_put_status"] = put_r.status_code
 
@@ -1527,10 +1659,11 @@ def cmd_write_text_elements(s: requests.Session, url: str, args) -> dict:
         return {"error": "Provide --file or --text with the text element content"}
 
     # Lock — try text element object first, then fall back to the program object
-    handle, corr = _lock(s, base)
+    lock_base = base
+    handle, corr = _lock(s, lock_base, corr_nr=getattr(args, "transport", "") or "")
     if not handle:
-        prog_base = f"{url}/sap/bc/adt/{TYPE_PATH_MAP.get(obj_type, 'programs/programs')}/{name}"
-        handle, corr = _lock(s, prog_base, corr_nr=getattr(args, "transport", "") or "")
+        lock_base = f"{url}/sap/bc/adt/{TYPE_PATH_MAP.get(obj_type, 'programs/programs')}/{name}"
+        handle, corr = _lock(s, lock_base, corr_nr=getattr(args, "transport", "") or "")
     if not handle:
         return {"error": "Could not lock object for text element write — may be locked by another user"}
 
@@ -1539,15 +1672,17 @@ def cmd_write_text_elements(s: requests.Session, url: str, args) -> dict:
     if transport:
         qs += f"&corrNr={transport}"
 
-    put_r = s.put(
-        f"{base}/source/{section}?{qs}",
-        data=content.encode("utf-8"),
-        headers={
-            "Content-Type": ct_write,
-            "X-sap-adt-lockhandle": handle,
-        },
-    )
-    _unlock(s, base, handle)
+    try:
+        put_r = s.put(
+            f"{base}/source/{section}?{qs}",
+            data=content.encode("utf-8"),
+            headers={
+                "Content-Type": ct_write,
+                "X-sap-adt-lockhandle": handle,
+            },
+        )
+    finally:
+        _unlock(s, lock_base, handle)
 
     ok = put_r.status_code in (200, 204)
     return {
@@ -1578,7 +1713,7 @@ examples (use --url / --user / --pwd / --client for all):
     adt-client ... write-source ZMY_PROG --file source.abap --type PROG/P
 
   Create package with transport layer:
-    adt-client ... create-package ZTEST --description "My package" --superpackage ZHOME --transport DEVK900001 --sw-component HOME --transport-layer ZSD2
+    adt-client ... create-package ZTEST --description "My package" --superpackage ZHOME --transport DEVK900001 --sw-component HOME --transport-layer ZDEV
 
   Create program / class / interface / function-group:
     adt-client ... create-program ZMY_PROG --description "..." --package ZPKG --transport DEVK900001
@@ -1637,11 +1772,13 @@ examples (use --url / --user / --pwd / --client for all):
     adt-client ... discovery
         """,
     )
-    p.add_argument("--url", required=True, help="SAP system base URL (e.g. https://host:44300)")
-    p.add_argument("--user", required=True, help="SAP logon user")
-    p.add_argument("--pwd", required=True, help="SAP password")
-    p.add_argument("--client", default="100", help="SAP client (default: 100)")
-    p.add_argument("--lang", default="EN", help="Logon language (default: EN)")
+    p.add_argument("--dest", help="Destination name SID_CLIENT_USER_LANG (e.g. DEV_100_LEO_EN); "
+                                  "resolves url/user/pwd from SAP_<SID>_* env vars — see SKILL.md")
+    p.add_argument("--url", help="SAP system base URL (e.g. https://host:44300); overrides --dest")
+    p.add_argument("--user", help="SAP logon user; overrides --dest")
+    p.add_argument("--pwd", help="SAP password (prefer --dest + env var; avoids plaintext on the CLI)")
+    p.add_argument("--client", help="SAP client (default: 100, or the client from --dest)")
+    p.add_argument("--lang", help="Logon language (default: EN, or the language from --dest)")
 
     sub = p.add_subparsers(dest="command", required=True, metavar="command")
 
@@ -1728,14 +1865,14 @@ examples (use --url / --user / --pwd / --client for all):
 
     # create-package
     cpp = sub.add_parser("create-package", help="Create a new ABAP package (DEVC/K)")
-    cpp.add_argument("name", help="Package name, e.g. ZLEO_MDM")
+    cpp.add_argument("name", help="Package name, e.g. ZHABA_MDM")
     cpp.add_argument("--description", required=True, help="Short description")
     cpp.add_argument("--superpackage", required=True, help="Parent package name")
     cpp.add_argument("--transport", default="", help="Transport request number")
     cpp.add_argument("--sw-component", default="HOME", dest="sw_component",
                      help="Software component (default: HOME)")
     cpp.add_argument("--transport-layer", default="", dest="transport_layer",
-                     help="Transport layer, e.g. ZSD2 (leave empty for local)")
+                     help="Transport layer, e.g. ZDEV (leave empty for local)")
 
     # create-program
     crp = sub.add_parser("create-program", help="Create a new ABAP report/program (PROG/P)")
@@ -1828,11 +1965,12 @@ examples (use --url / --user / --pwd / --client for all):
     dtp.add_argument("--force", action="store_true", help="Skip confirmation (for agent use)")
 
     # create-transport
-    ctrp = sub.add_parser("create-transport", help="Create a new Workbench or Customizing transport request")
+    ctrp = sub.add_parser("create-transport", help="Create a new Workbench transport request")
     ctrp.add_argument("--description", required=True, help="Transport description")
-    ctrp.add_argument("--target", default="", help="Target system SID, e.g. PRD")
+    ctrp.add_argument("--package", default="", help="Package (DEVCLASS) — determines transport route (optional)")
+    ctrp.add_argument("--target", default="", help="Deprecated — target follows the package's transport layer")
     ctrp.add_argument("--type-tr", default="K", dest="type_tr",
-                      choices=["K", "W"], help="K=Workbench (default) W=Customizing")
+                      choices=["K", "W"], help="K=Workbench (default); W=Customizing is not supported via ADT REST")
 
     # release-transport
     rtrp = sub.add_parser("release-transport", help="Release a transport request (tasks first, then request)")
@@ -1850,7 +1988,7 @@ examples (use --url / --user / --pwd / --client for all):
     cfm.add_argument("name", help="Function module name, e.g. Z_MY_FUNCTION")
     cfm.add_argument("--description", required=True, help="Short description")
     cfm.add_argument("--group", required=True, help="Parent function group name (FUGR), e.g. ZFUGR_UTILS")
-    cfm.add_argument("--package", required=True, help="Package name")
+    cfm.add_argument("--package", default="", help="Ignored — the FM inherits the function group's package")
     cfm.add_argument("--transport", default="", help="Transport request number")
     cfm.add_argument("--processing-type", default="normal", dest="processing_type",
                      choices=["normal", "remote-enabled", "update"],
@@ -1873,7 +2011,7 @@ examples (use --url / --user / --pwd / --client for all):
 
     # create-cds
     ccds = sub.add_parser("create-cds",
-                          help="Create a CDS Data Definition (DDLS/DF) via ADT DDLA endpoint")
+                          help="Create a CDS Data Definition (DDLS/DF) via ddic/ddl/sources")
     ccds.add_argument("name", help="CDS view name, e.g. ZCDS_MY_VIEW")
     ccds.add_argument("--description", required=True, help="Short description")
     ccds.add_argument("--package", required=True, help="Package name")
@@ -1909,8 +2047,23 @@ examples (use --url / --user / --pwd / --client for all):
 
 
 def main():
+    # Windows consoles default to cp1252 — non-ASCII SAP descriptions would
+    # crash json output with ensure_ascii=False
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.dest:
+        _resolve_destination(args)
+    missing = [f for f, v in (("--url", args.url), ("--user", args.user),
+                              ("--pwd", args.pwd)) if not v]
+    if missing:
+        parser.error(f"missing {', '.join(missing)} — pass them explicitly "
+                     f"or use --dest with SAP_<SID>_* env vars (see SKILL.md)")
+    args.client = args.client or "100"
+    args.lang = args.lang or "EN"
 
     # Inject --user into args so creation commands can set adtcore:responsible
     # (args.user is already the SAP logon user from the global --user flag)
@@ -1929,7 +2082,11 @@ def main():
             print(json.dumps({"message": "Aborted"}))
             return
 
-    session = make_session(args.url, args.user, args.pwd, args.client, args.lang)
+    try:
+        session = make_session(args.url, args.user, args.pwd, args.client, args.lang)
+    except requests.exceptions.RequestException as e:
+        print(json.dumps({"error": f"Could not connect to {args.url}: {e}"}))
+        sys.exit(1)
 
     handlers = {
         "search":                   cmd_search,
@@ -1975,7 +2132,17 @@ def main():
         "write-text-elements":      cmd_write_text_elements,
     }
 
-    result = handlers[args.command](session, args.url, args)
+    try:
+        result = handlers[args.command](session, args.url, args)
+    except requests.exceptions.RequestException as e:
+        print(json.dumps({"error": f"HTTP request failed: {e}"}))
+        sys.exit(1)
+    except OSError as e:
+        print(json.dumps({"error": f"File error: {e}"}))
+        sys.exit(1)
+    except Exception as e:
+        print(json.dumps({"error": f"{type(e).__name__}: {e}"}))
+        sys.exit(1)
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
