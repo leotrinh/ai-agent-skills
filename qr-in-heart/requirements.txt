@@ -1,0 +1,5 @@
+qrcode[pil]>=7.4.2,<9
+Pillow>=10,<12
+opencv-python>=4.8,<5
+numpy>=1.24,<3
+Flask>=3,<4
